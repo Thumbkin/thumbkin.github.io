@@ -1,1 +1,74 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <script type="text/javascript" src='./js/logger.js'> </script>
+        <script type="text/javascript" src='./js/reasons_to_choose.js'> </script>
+        <script type="text/javascript" src='./js/reasons_to_swap.js'> </script>
+        <script type="text/javascript" src='./js/scheduler_types.js'> </script>
+        <script type="text/javascript" src='./js/process_colors.js'> </script>
+        <script type="text/javascript" src='./js/process.js'> </script>
+        <script type="text/javascript" src='./js/starting_situation.js'> </script>
+        <script type="text/javascript" src='./js/step.js'> </script>
+        <script type="text/javascript" src='./js/scheduler.js'> </script>
+        <script type="text/javascript" src='./js/main.js'> </script>
+        <style>
+            table {
+                margin: 0px;
+                padding: 0px;
+                border-collapse: collapse;
+            }
+            td {
+                height: 20px;
+                width: 30px;
+                text-align: right;
+            }
+            td.scheduler_vertical {
+                border-right: 3px solid black;
+                width: 100px;
+            }
+            td.scheduler_step {
+                border: 1px solid black;
+                text-align: center;
+            }
+            td.scheduler_vertical_no_border {
+                width: 100px;
+            }
+            td.scheduler_time {
+                border-top: 3px solid black;
+            }
+
+            td.starting_vertical_top {
+                border: 1px solid black;
+                border-bottom: 3px solid black;
+                text-align: center;
+            }
+            td.starting_vertical_process {
+                border-left: 1px solid black;
+                border-bottom: 1px solid black;
+                border-right: 3px solid black;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body onload="renderOpgave()">
+        <div id="opgave"></div>
+        <br>
+        <div>
+            Gekozen planners:
+            <ul>
+                <li>FCFS</li>
+                <li>SRT</li>
+                <li>SPN</li>
+                <li>RR (Q = 3, 4, 5)</li>
+            </ul>
+        </div>
+        <br>
+        <button onclick="runSchedulers();">Maak planning</button>
+        <br>
+        <div id="results_scheduler"></div>
+        <br>
+        <div id="logger"></div>
+    </body>
+</html>
