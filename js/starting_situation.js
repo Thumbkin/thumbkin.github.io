@@ -11,11 +11,29 @@ class StartingSituation {
 
     getProcesses () {
         let clonedProcesses = [];
+        // Loop each process and only clone it if has execution time
         this.processes.forEach(function cloneProcess(process){
-            clonedProcesses.push(Object.assign(Object.create(Object.getPrototypeOf(process)), process));
+            if (process.getLength() > 0) {
+                clonedProcesses.push(Object.assign(Object.create(Object.getPrototypeOf(process)), process));
+            }
+        });
+        // sort processes by id
+        clonedProcesses.sort(function(a, b) {
+            if (a.getId() < b.getId()) {
+                return -1;
+            }
+            if (a.getId() > b.getId()) {
+                return 1;
+            }
+            return 0;
         });
         // return a clone of the processes
         return clonedProcesses;
+    }
+
+    // Checks if we have at least one process with execution time
+    isValid() {
+        return this.getProcesses().length > 0;
     }
 
     getAsHTML (){
