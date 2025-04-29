@@ -1,10 +1,9 @@
 class Step {
-    constructor(nr, queue_pre_execution, need_to_swap, reason_to_swap, executed_process, reason_chosen_process, queue_execution,
+    constructor(nr, queue_pre_execution, reason_to_swap, executed_process, reason_chosen_process, queue_execution,
                 need_to_add_queue, processes_to_add, queue_after_execution, total_scheduler) {
         this.nr = nr;
 
         this.queue_pre_execution = queue_pre_execution;
-        this.need_to_swap = need_to_swap;
         this.reason_to_swap = reason_to_swap
 
         this.executed_process = executed_process;
@@ -46,9 +45,12 @@ class Step {
         let html_text = '&nbsp;&nbsp;&nbsp;&nbsp;Stap ' + this.nr + ":<br>" +
             '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Voor uitvoering: ' + "<br>" +
             '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wachtrij: ' + this.processQueueToHTML(this.queue_pre_execution) + "<br>" +
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wisselen? ' + this.need_to_swap;
-        if (this.need_to_swap) {
+            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wisselen? ';
+        if (this.reason_to_swap !== ReasonsToSwap.NONE) {
+            html_text + 'Ja';
             html_text += " (" + this.reason_to_swap.toValue() + ")";
+        }else {
+            html_text + 'Nee';
         }
         html_text +=  "<br>"+
             '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Uitvoering: ' + "<br>" +

@@ -17,8 +17,15 @@ class Scheduler {
     total_scheduler = [];
     type;
 
-    executePlanner(processes){
+    constructor(type, qValue, processes) {
+        this.type = type;
+        this.roundQvalue = qValue;
         this.processes = processes;
+        this.total_scheduler = [];
+        this.totalSteps = 0;
+    }
+
+    executePlanner(){
         // calculate the total amount of steps
         this.calculateTotalAmountOfSteps();
 
@@ -35,57 +42,31 @@ class Scheduler {
         // plan/calculate each step
         while (this.currentStep < this.totalSteps) {
             this.planNextStep();
+
+            // all is done so add the results from this step to the array
+            let currentProcessId = "";
+            if (this.currentProcess != null) { currentProcessId = this.currentProcess.getId(); }
+
+            this.steps[this.currentStep] = new Step(this.currentStep, this.queue_pre_execution, this.reason_to_swap, currentProcessId,
+                this.reason_chosen_process, this.queue_execution, this.processes_to_add_to_queue.length > 0,
+                this.processes_to_add_to_queue, this.queue_after_execution, this.total_scheduler);
+
+            // go to next step
+            this.currentStep++;
         }
     }
 
-    planNextStep() {
-        // each step consists of 3 phases: pre execution, execution and post execution
-        this.runPreExecutionPhase();
-        this.runExecutionPhase();
-        // this.runPostExecutionPhase();
-    }
-
-    // Pre execution phase
-    //  1) if first step: copy all processes who start now
-    //     else: copy queue after execution from previous step
-    //  2) Check if we have to swap the previous executed process with a new one
-    //     if so, swap
-    runPreExecutionPhase() {
-        this.queue_pre_execution = [];
-        // if not first step, copy the queue from the previous step
-        if (this.currentStep > 0) {
-            this.queue_pre_execution = [...this.steps[this.currentStep - 1].getQueueAfterExecution()];
-            this.lastProcess = this.currentProcess;
-        }
-        // if first step add all processes to queue who start at 0
-        else {
-            this.processes.forEach(function addToQueue(process) {
-                if (process.getStart() === 0) {
-                    this.queue_pre_execution.push(process);
-                }
-            })
-        }
-
-        // determine if we must swap process to execute
-        this.determineIfSwapIsNeeded();
-    }
-
-    // Executes a step of a process
-    //  1) swap process first if needed
-    //  2) execute the process
-    runExecutionPhase() {
-        // copy the queue from pre execution phase to execution phase here
-        // because if we have to swap we
-        this.queue_execution = [...this.queue_pre_execution];
-
-        // if we have to swap, get the process from queue
-        if(this.reason_to_swap !== ReasonsToSwap.NONE){
-            this.swapProcess();
-        }
-        // no need to swap so reexecute the last process
-        else {
-            this.currentProcess = this.lastProcess;
-            this.reason_chosen_process = ReasonsToChoose.NONE;
+    calculateTotalAmountOfSteps() {
+        // sort process based on start point
+        this.processes.sort(function(a, b) { return a.getStart() < b.getStart(); });
+        // loop each process and add its length as steps
+        for(let i=0; i < this.processes.length; i++){
+            // if start point is in future (in other words there will be empty execution steps)
+            // calculate forward
+            if (this.processes[i].getStart() > this.totalSteps) {
+                this.totalSteps = this.processes[i].getStart();
+            }
+            this.totalSteps += this.processes[i].getLength();
         }
     }
 
@@ -114,32 +95,137 @@ class Scheduler {
 
     // swaps the current running process with the first from the queue
     swapProcess() {
+        // check if the current process has to be re-added to queue, only possible with RR or SRT
+        if (this.type === SchedulerType.SRT && this.lastProcess && this.lastProcess.isFinished() === false) {
+            this.processes_to_add_to_queue.push(this.lastProcess.getId());
+        }
+
+        // If RR we readd current process if Q value is reached and it aint finished
+        if (this.type === SchedulerType.RR && this.currentQstep === this.roundQvalue) {
+            // readd if there was a previous proces
+            if (this.lastProcess && this.lastProcess.isFinished() === false) {
+                this.processes_to_add_to_queue.push(this.lastProcess.getId());
+            }
+        }
+
         // check if there a process left we can take
         if (this.queue_execution.length > 0) {
+            // since the queue is sorted for the type of scheduler, we always take first item present if available
             this.currentProcess = this.queue_execution.shift();
+            // determine the reason on which we based our decision
             if (this.type === SchedulerType.SRT) { this.reason_chosen_process = ReasonsToChoose.SHORTEST_TIME_LEFT_IN_QUEUE; }
             else if (this.type === SchedulerType.SPN) { this.reason_chosen_process = ReasonsToChoose.SHORTEST_IN_QUEUE; }
             else { this.reason_chosen_process = ReasonsToChoose.FIRST_IN_QUEUE; }
-
-        } else {
+        }
+        else {
             this.currentProcess = null;
             this.reason_chosen_process = ReasonsToChoose.NO_PROCESS_AVAILABLE;
         }
     }
 
-    calculateTotalAmountOfSteps() {
-        this.totalSteps = 0;
-        // sort process based on start point
-        this.processes.sort(function(a, b) { return a.getStart() < b.getStart(); });
-        // loop each process and add its length as steps
-        this.processes.forEach(function calculateLength(process){
-            // if start point is in future (in other words there will be empty execution steps)
-            // calculate forward
-            if (process.getStart() > this.totalSteps) {
-                this.totalSteps = process.getStart();
+    // Method that completes the next stap of the planner
+    planNextStep() {
+        // each step consists of 3 phases: pre execution, execution and post execution
+        this.runPreExecutionPhase();
+        this.runExecutionPhase();
+        this.runPostExecutionPhase();
+    }
+
+    // Pre execution phase
+    //  1) if first step: copy all processes that start now
+    //     else: copy queue after execution from previous step
+    //  2) Check if we have to swap the previous executed process with a new one
+    //     if so, swap
+    runPreExecutionPhase() {
+        this.queue_pre_execution = [];
+        // if not first step, copy the queue from the previous step
+        if (this.currentStep > 0) {
+            this.queue_pre_execution = [...this.steps[this.currentStep - 1].getQueueAfterExecution()];
+            this.lastProcess = this.currentProcess;
+        }
+        // if first step add all processes to queue who start at 0
+        else {
+            for(let i=0; i < this.processes.length; i++){
+                if (this.processes[i].getStart() === 0) {
+                    this.queue_pre_execution.push(this.processes[i]);
+                }
             }
-            this.totalSteps += process.getLength();
-        });
+        }
+
+        // determine if we must swap process to execute
+        this.determineIfSwapIsNeeded();
+
+        // copy the queue from pre execution phase to execution phase here
+        // because if we have to swap we remove it from execution queue first before actual executing
+        this.queue_execution = [...this.queue_pre_execution];
+
+        // if we have to swap, get the process from queue
+        if(this.reason_to_swap !== ReasonsToSwap.NONE){
+            this.swapProcess();
+            this.currentQstep = 0; // reset RR q value
+        }
+        // no need to swap so reexecute the last process
+        else {
+            this.currentProcess = this.lastProcess;
+            this.reason_chosen_process = ReasonsToChoose.NONE;
+        }
+    }
+
+    // Executes a step of a process
+    //  1) execute the process if one is loaded
+    runExecutionPhase() {
+        // if not first step, copy the scheduler from previous step
+        if (this.currentStep > 0) {
+            this.total_scheduler = [...this.steps[this.currentStep - 1].getTotalScheduler()];
+        }
+
+        if(this.currentProcess !== null) {
+            this.currentProcess.executeStep();
+            this.currentQstep++; // increment the RR q value
+            this.total_scheduler.push(this.currentProcess.getId());
+        }
+        else {
+            this.total_scheduler.push("");
+        }
+    }
+
+    // execute the steps after executing
+    // 1) check if current executed process needs to readded to queue
+    // 2) Check if new processes start at this point so they must be added to queueu
+    // 3) add all processes to the queue
+    runPostExecutionPhase(){
+        // check if current executed process needs to readded to queue
+        this.queue_after_execution = [...this.queue_execution];
+        this.processes_to_add_to_queue = [];
+
+        // re-add the current process, if it was stopped because of Q value
+        if (this.type === SchedulerType.RR &&
+            this.currentQstep === this.roundQvalue && this.currentProcess.isFinished() === false) {
+            this.queue_after_execution.push(this.currentProcess);
+            this.processes_to_add_to_queue.push(this.currentProcess.getId());
+        }
+
+        // loop all processes and if they become available at the end of current step, they must be added to the queue
+        for(let i=0; i < this.processes.length; i++){
+            if (this.processes[i].getStart() === (this.currentStep + 1)) {
+                this.processes_to_add_to_queue.push(this.processes[i].getId());
+                this.queue_after_execution.push(this.processes[i]);
+            }
+        }
+
+        // if we added new processes to queue, resort em if we use SPN/SRT
+        // sort the queue if we added new processes
+        if (this.processes_to_add_to_queue.length > 0) {
+            this.queue_after_execution.sort(function (a, b) {
+                if (a.getRemaining() < b.getRemaining()) {
+                    return -1;
+                }
+                if (a.getRemaining() === b.getRemaining() && a.getStart() <= b.getStart()) {
+                    return -1;
+                }
+                return 1;
+            });
+        }
     }
 
     getSteps() {
@@ -159,15 +245,15 @@ class Scheduler {
     }
 
     getQvalue(){
-        return this.q;
+        return this.roundQvalue;
     }
 
     // Parses solution of one scheduler to html
-    getSolutionAsHTML(processes){
+    getSolutionAsHTML(){
         // map the processes their colors to id
         let processColors = {}
 
-        processes.forEach(function addColor(process){
+        this.processes.forEach(function addColor(process){
            processColors[process.getId()] = process.getHtmlColor();
         });
 
@@ -176,7 +262,7 @@ class Scheduler {
         // first row is empty
         toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + (numberOfSteps + 1)+ '"></td></tr>';
         // second row: name scheduler | each step from solution
-        if (this.getType() == SchedulerType.RR){
+        if (this.getType() === SchedulerType.RR){
             toHTML += '<tr><td class="scheduler_vertical">' + this.getType().getValue() +  ' (Q = ' + this.getQvalue() + ')</td>';
         }
         else {
@@ -204,12 +290,12 @@ class Scheduler {
     }
 
     // Parses solution of multiple schedulers to html
-    getSolutionsAsHTML(processes, schedulers){
+    getSolutionsAsHTML(schedulers){
         Logger.log("getSolutionsAsHTML");
         // map the processes their colors to id
         let processColors = {}
 
-        processes.forEach(function addColor(process){
+        this.processes.forEach(function addColor(process){
             processColors[process.getId()] = process.getHtmlColor();
         });
 
@@ -218,7 +304,7 @@ class Scheduler {
         let numberOfSteps = 1;
 
         Logger.log("# schedulers: " + schedulers.length);
-        if(schedulers != null && schedulers.length > 0) {
+        if(schedulers.length > 0) {
             numberOfSteps = schedulers[0].getSolution().length;
         }
         let toHTML = '<table>';
@@ -227,7 +313,7 @@ class Scheduler {
             // first row is empty
             toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + (numberOfSteps + 1)+ '"></td></tr>';
             // second row: name scheduler | each step from solution
-            if (schedulers[s].getType() == SchedulerType.RR){
+            if (schedulers[s].getType() === SchedulerType.RR){
                 Logger.log(schedulers[s].getType().getValue() + " (Q = " + schedulers[s].getQvalue() + ") heeft " + numberOfSteps + " stappen");
                 toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType().getValue() + ' (Q = ' + schedulers[s].getQvalue() + ')</td>';
             }
@@ -250,378 +336,5 @@ class Scheduler {
         toHTML += '</tr></table>';
 
         return toHTML;
-    }
-
-    // executes the current chosen process for 1 step
-    executeStepCurrentProcess(currentStep, currentProcess){
-        let total_scheduler = [];
-        if (currentStep > 0) {
-            total_scheduler = [...this.steps[currentStep - 1].getTotalScheduler()];
-        }
-
-        // only execute if we have a process
-        if (currentProcess != null) {
-            currentProcess.executeStep();
-            total_scheduler.push(currentProcess.getId());
-        }
-        else {
-            total_scheduler.push("");
-        }
-        return total_scheduler;
-    }
-}
-
-// Actual implementation for each planner
-class FCFS extends Scheduler {
-    constructor() {
-        super();
-        this.type = SchedulerType.FCFS;
-        this.steps = [];
-        this.total_scheduler = [];
-    }
-
-    // override plan method
-    plan (processes) {
-
-        // calculate each step
-        while (currentStep < totalSteps) {
-            // get the next proces to execute if we have to swap
-
-
-            let total_scheduler = this.executeStepCurrentProcess(currentStep, currentProcess);
-
-            // loop all process and if they start at the current step, they must be added to the queue
-            let queue_after_execution = [...queue_execution];
-            let processes_to_add_to_queue = [];
-
-            processes.forEach(function startsNow(process) {
-               if (process.getStart() === (currentStep + 1)) {
-                   processes_to_add_to_queue.push(process.getId());
-                   queue_after_execution.push(process);
-               }
-            });
-
-            // only execute if we have a process
-            let currentProcessId = "";
-            if (currentProcess != null) { currentProcess.getId(); }
-
-            this.steps[currentStep] = new Step(currentStep, queue_pre_execution, have_to_swap, reason_to_swap, currentProcessId,
-                reason_chosen_process, queue_execution, processes_to_add_to_queue.length > 0, processes_to_add_to_queue, queue_after_execution, total_scheduler);
-
-            // go to next step
-            currentStep++;
-        }
-
-        this.total_scheduler = this.steps[this.steps.length - 1].getTotalScheduler();
-    }
-}
-
-class SPN  extends Scheduler {
-    constructor() {
-        super();
-        this.type = SchedulerType.SPN;
-        this.steps = [];
-        this.total_scheduler = [];
-    }
-
-    // override plan method
-    plan (processes) {
-        // calculate the total amount of steps
-        let totalSteps = 0;
-        processes.forEach(function calculateLength(process){
-            totalSteps += process.getLength();
-        });
-
-        // sorteer de processen van klein naar groot (ongeacht startpunt)
-        processes.sort(function(a, b){
-            if(a.getLength() < b.getLength()) { return -1; }
-            if(a.getLength() === b.getLength() && a.getStart() <= b.getStart()) { return -1; }
-            return 1;
-        });
-
-        let currentStep = 0;
-        let currentProcess, lastProcess;
-
-        // calculate each step
-        while (currentStep < totalSteps) {
-            let queue_pre_execution = [];
-            // if not first step, copy the queue from the previous step
-            if (currentStep > 0) {
-                queue_pre_execution = [...this.steps[currentStep - 1].getQueueAfterExecution()];
-                lastProcess = currentProcess;
-            }
-            // if first step add all processes to queue who start at 0
-            else {
-                processes.forEach(function addToQueue(process){
-                    if(process.getStart() === 0) {
-                        queue_pre_execution.push(process);
-                    }
-                })
-            }
-
-            // Check if last executed proces was finished, if so then swap
-            let have_to_swap = false;
-            let reason_to_swap = ReasonsToSwap.NONE;
-
-            if (lastProcess == null || lastProcess.isFinished() === true){
-                have_to_swap = true;
-                reason_to_swap = ReasonsToSwap.FINISHED;
-            }
-
-            // calculate the next proces if we have to swap
-            let queue_execution = [...queue_pre_execution];
-            let reason_chosen_process = "";
-            if(have_to_swap === true) {
-                reason_chosen_process = ReasonsToChoose.SHORTEST_IN_QUEUE;
-                currentProcess = queue_execution.shift();
-            }
-            else {
-                currentProcess = lastProcess;
-            }
-
-            let total_scheduler = this.executeStepCurrentProcess(currentStep, currentProcess);
-
-            // loop all process and if they start at the current step, they must be added to the queue
-            let queue_after_execution = [...queue_execution];
-            let processes_to_add_to_queue = [];
-
-            processes.forEach(function startsNow(process) {
-                if(process.getStart() === (currentStep + 1)){
-                    processes_to_add_to_queue.push(process.getId());
-                    queue_after_execution.push(process);
-                }
-            });
-
-            // sort the queue if we added new processes
-            if (processes_to_add_to_queue.length > 0) {
-                queue_after_execution.sort(function (a, b) {
-                    if (a.getLength() < b.getLength()) {
-                        return -1;
-                    }
-                    if (a.getLength() === b.getLength() && a.getStart() <= b.getStart()) {
-                        return -1;
-                    }
-                    return 1;
-                });
-            }
-
-            this.steps[currentStep] = new Step(currentStep, queue_pre_execution, have_to_swap, reason_to_swap, currentProcess.getId(),
-                reason_chosen_process, queue_execution, processes_to_add_to_queue.length > 0, processes_to_add_to_queue, queue_after_execution, total_scheduler);
-
-            // go to next step
-            currentStep++;
-        }
-
-        this.total_scheduler = this.steps[this.steps.length - 1].getTotalScheduler();
-    }
-}
-
-class SRT extends Scheduler {
-    constructor() {
-        super();
-        this.type = SchedulerType.SRT;
-        this.steps = [];
-    }
-
-    // override plan method
-    plan (processes) {
-        // calculate the total amount of steps
-        let totalSteps = 0;
-        processes.forEach(function calculateLength(process){
-            totalSteps += process.getLength();
-        });
-
-        // sorteer de processen van klein naar groot (ongeacht startpunt)
-        processes.sort(function(a, b){
-            if(a.getRemaining() < b.getRemaining()) { return -1; }
-            if(a.getRemaining() === b.getRemaining() && a.getStart() <= b.getStart()) { return -1; }
-            return 1;
-        });
-
-        let currentStep = 0;
-        let currentProcess, lastProcess;
-
-        // calculate each step
-        while (currentStep < totalSteps) {
-            let queue_pre_execution = [];
-            // if not first step, copy the queue from the previous step
-            if (currentStep > 0) {
-                queue_pre_execution = [...this.steps[currentStep - 1].getQueueAfterExecution()];
-                lastProcess = currentProcess;
-            }
-            // if first step add all processes to queue who start at 0
-            else {
-                processes.forEach(function addToQueue(process){
-                    if(process.getStart() === 0) {
-                        queue_pre_execution.push(process);
-                    }
-                })
-            }
-
-            // array holding process to add to queue
-            let processes_to_add_to_queue = [];
-
-            // Check if last executed proces was finished, if so then swap
-            let have_to_swap = false;
-            let reason_to_swap = ReasonsToSwap.NONE;
-
-            // swap if last process finished or if shorter is in queue
-            if (lastProcess == null || lastProcess.isFinished() === true){
-                have_to_swap = true;
-                reason_to_swap = ReasonsToSwap.FINISHED;
-            }
-
-            if(have_to_swap === false && lastProcess != null && queue_pre_execution.length > 0 && queue_pre_execution[0].getRemaining() < lastProcess.getRemaining()){
-                have_to_swap = true;
-                reason_to_swap = ReasonsToSwap.SHORTER_PROCESS;
-                // add current process back to queue
-                processes_to_add_to_queue.push(lastProcess.getId());
-            }
-
-            // calculate the next proces if we have to swap
-            let queue_execution = [...queue_pre_execution];
-            let reason_chosen_process = "";
-            if(have_to_swap === true) {
-                reason_chosen_process = ReasonsToChoose.SHORTEST_TIME_LEFT_IN_QUEUE;
-                currentProcess = queue_execution.shift();
-            }
-            else {
-                currentProcess = lastProcess;
-            }
-
-            let total_scheduler = this.executeStepCurrentProcess(currentStep, currentProcess);
-
-            // loop all process and if they start at the current step, they must be added to the queue
-            let queue_after_execution = [...queue_execution];
-
-            processes.forEach(function startsNow(process) {
-                if(process.getStart() === (currentStep + 1)){
-                    processes_to_add_to_queue.push(process.getId());
-                    queue_after_execution.push(process);
-                }
-            });
-
-            // (re)sort the queue if we added new processes
-            if (processes_to_add_to_queue.length > 0) {
-                // first add the current executed process first
-                if (reason_to_swap === ReasonsToSwap.SHORTER_PROCESS) {
-                    queue_after_execution.push(lastProcess);
-                }
-                queue_after_execution.sort(function (a, b) {
-                    if (a.getRemaining() < b.getRemaining()) {
-                        return -1;
-                    }
-                    if (a.getRemaining() === b.getRemaining() && a.getStart() <= b.getStart()) {
-                        return -1;
-                    }
-                    return 1;
-                });
-            }
-
-            this.steps[currentStep] = new Step(currentStep, queue_pre_execution, have_to_swap, reason_to_swap, currentProcess.getId(),
-                reason_chosen_process, queue_execution, processes_to_add_to_queue.length > 0, processes_to_add_to_queue, queue_after_execution, total_scheduler);
-
-            // go to next step
-            currentStep++;
-        }
-
-        this.total_scheduler = this.steps[this.steps.length - 1].getTotalScheduler();
-    }
-}
-
-class RR extends Scheduler {
-    constructor(q) {
-        super();
-        this.type = SchedulerType.RR;
-        this.steps = [];
-        this.q = q;
-    }
-
-    // override plan method
-    plan (processes){
-        // calculate the total amount of steps
-        let totalSteps = 0;
-        processes.forEach(function calculateLength(process){
-            totalSteps += process.getLength();
-        });
-
-        let currentStep = 0;
-        let currentProcess, lastProcess;
-
-        let currentQ = 0;
-
-        // calculate each step
-        while (currentStep < totalSteps) {
-            let queue_pre_execution = [];
-            // if not first step, copy the queue from the previous step
-            if (currentStep > 0) {
-                queue_pre_execution = [...this.steps[currentStep - 1].getQueueAfterExecution()];
-                lastProcess = currentProcess;
-            }
-            // if first step add all processes to queue who start at 0
-            else {
-                processes.forEach(function addToQueue(process){
-                    if(process.getStart() === 0) {
-                        queue_pre_execution.push(process);
-                    }
-                })
-            }
-
-            // array holding process to add to queue
-            let processes_to_add_to_queue = [];
-
-            // Check if last executed proces was finished, if so then swap
-            let have_to_swap = false;
-            let reason_to_swap = ReasonsToSwap.NONE;
-
-            // swap if last process finished or if shorter is in queue
-            if (lastProcess == null || lastProcess.isFinished() === true){
-                have_to_swap = true;
-                reason_to_swap = ReasonsToSwap.FINISHED;
-            }
-
-            if(have_to_swap === false && currentQ === this.q){
-                have_to_swap = true;
-                reason_to_swap = ReasonsToSwap.Q_VALUE_REACHED;
-            }
-
-            // calculate the next proces if we have to swap
-            let queue_execution = [...queue_pre_execution];
-            let reason_chosen_process = "";
-            if(have_to_swap === true) {
-                reason_chosen_process = ReasonsToChoose.FIRST_IN_QUEUE;
-                currentProcess = queue_execution.shift();
-                currentQ = 0;
-            }
-            else {
-                currentProcess = lastProcess;
-            }
-
-            let total_scheduler = this.executeStepCurrentProcess(currentStep, currentProcess);
-            currentQ++;
-
-            let queue_after_execution = [...queue_execution];
-
-            // read the current process, if it was stopped because of Q value
-            if (currentQ === this.q && currentProcess.isFinished() === false) {
-                queue_after_execution.push(currentProcess);
-            }
-
-            // loop all process and if they start at the current step, they must be added to the queue
-            processes.forEach(function startsNow(process) {
-                if(process.getStart() === (currentStep + 1)){
-                    processes_to_add_to_queue.push(process.getId());
-                    queue_after_execution.push(process);
-                }
-            });
-
-            this.steps[currentStep] = new Step(currentStep, queue_pre_execution, have_to_swap, reason_to_swap, currentProcess.getId(),
-                reason_chosen_process, queue_execution, processes_to_add_to_queue.length > 0, processes_to_add_to_queue, queue_after_execution, total_scheduler);
-
-            // go to next step
-            currentStep++;
-        }
-
-        this.total_scheduler = this.steps[this.steps.length - 1].getTotalScheduler();
     }
 }
