@@ -17,6 +17,14 @@ class Step {
         this.total_scheduler = total_scheduler;
     }
 
+    getQueueBeforeExecution(){
+        return this.queue_pre_execution;
+    }
+
+    getQueueExecution(){
+        return this.queue_execution;
+    }
+
     getQueueAfterExecution() {
         return this.queue_after_execution;
     }
@@ -27,6 +35,10 @@ class Step {
 
     getTotalScheduler() {
         return this.total_scheduler;
+    }
+
+    getNumber(){
+        return this.nr;
     }
 
     processQueueToHTML(queue) {

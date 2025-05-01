@@ -24,16 +24,6 @@ class StartingSituation {
             }
         }
     }
-
-    getUsedProcessIds(){
-        let usedProcessIds = [];
-    	for(let i = 0; i < PROCESS_IDS.length; i++) {
-    		if(this.used_process_ids.get(PROCESS_IDS[i]) === true){
-    			usedProcessIds.push(PROCESS_IDS[i]);
-    		}
-    	}
-    	return usedProcessIds;
-    }
     
     getNextUnusedProcessId(){
         for(let i = 0; i < PROCESS_IDS.length; i++) {
@@ -134,7 +124,7 @@ class StartingSituation {
         });
         // Last row: time units
         toHTML += '<tr><td class="scheduler_vertical_no_border">0</td>';
-        for (let i = 1; i <= amountTimeNeeded + 1; i++) {
+        for (let i = 1; i <= amountTimeNeeded; i++) {
             toHTML += '<td class="scheduler_time">' + i + '</td>';
         }
         toHTML += '</tr></table>';

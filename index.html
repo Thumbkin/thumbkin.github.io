@@ -50,6 +50,10 @@
                 border: 1px solid black;
                 text-align: center;
             }
+
+            .stepscontainer {
+                width: 100%; /* Width of the outside container */
+            }
         </style>
     </head>
     <body onload="addNewProcessRow();">
@@ -97,8 +101,39 @@
             </div>
         </div>
         <br>
-        <div id="resultaten_planners">
+        <div id="resultaten_container" style="float:left;">
             <H2>Resultaten</H2>
+            <div class="stepscontainer">
+                <div>
+                    <table>
+                        <tr>
+                            <td id="h_timestamp"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="width: 250px;">Voor uitvoering:</td>
+                            <td>Wachtrij</td>
+                            <td id="queue_pre_exec">Wachtrij</td>
+                        </tr>
+                        <tr>
+                            <td>Uitvoering:</td>
+                            <td>Wachtrij</td>
+                            <td id="queue_exec">Wachtrij</td>
+                        </tr>
+                        <tr>
+                            <td>Na uitvoering:</td>
+                            <td>Wachtrij</td>
+                            <td id="queue_post_exec">Wachtrij</td>
+                        </tr>
+                    </table>
+                </div>
+                <button id="btn_prev_step" onclick="loadPreviousStep();">&lt;</button>
+                <input type="range" min="0" max="100" id="range_steps" onclick="loadCurrentStep();">
+                <button id="btn_next_step" onclick="loadNextStep();">&gt;</button>
+                <button id="btn_play_steps" onclick="animateRemainingSteps();">Animate</button>
+            </div>
+            <div id="resultaten_planners">
+            </div>
         </div>
     </body>
 </html>
