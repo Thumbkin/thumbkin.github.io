@@ -3,11 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Title</title>
-        <script type="text/javascript" src='./js/logger.js'> </script>
-        <script type="text/javascript" src='./js/reasons_to_choose.js'> </script>
-        <script type="text/javascript" src='./js/reasons_to_swap.js'> </script>
-        <script type="text/javascript" src='./js/scheduler_types.js'> </script>
-        <script type="text/javascript" src='./js/process_colors.js'> </script>
+        <script type="text/javascript" src='./js/constants.js'> </script>
         <script type="text/javascript" src='./js/process.js'> </script>
         <script type="text/javascript" src='./js/starting_situation.js'> </script>
         <script type="text/javascript" src='./js/step.js'> </script>
@@ -50,6 +46,10 @@
                 border-right: 3px solid black;
                 text-align: center;
             }
+            td.step_one_process {
+                border: 1px solid black;
+                text-align: center;
+            }
         </style>
     </head>
     <body onload="addNewProcessRow();">
@@ -67,6 +67,11 @@
                         <th></th>
                     </tr>
                 </table>
+                <br>
+                <button onclick="laadTestStartSituatieKlas();">Laad test start situatie uit slides</button>
+                <br>
+                <button onclick="laadTestAlleKleuren();">Laad test start situatie met alle kleuren</button>
+                <br>
             </div>
             <div id="stap_twee" style="float: left">
                 <h2>Stap 2: Kies de gewenste planners</h2>

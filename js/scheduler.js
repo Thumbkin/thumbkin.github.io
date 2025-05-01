@@ -11,8 +11,8 @@ class Scheduler {
     currentProcess;
     lastProcess;
 
-    reason_to_swap = ReasonsToSwap.NONE;
-    reason_chosen_process = ReasonsToChoose.NONE;
+    reason_to_swap = REASONS_TO_SWAP.get('NONE');
+    reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('NONE');
 
     total_scheduler = [];
     type;
@@ -32,7 +32,7 @@ class Scheduler {
         this.currentStep = 0;
 
         // Sort processes based on start time (FCFS, RR), or timeremaining (SPN/SRT)
-        if (this.type === SchedulerType.FCFS || this.type === SchedulerType.RR) {
+        if (this.type === SCHEDULER_TYPES.get('FCFS') || this.type === SCHEDULER_TYPES.get('RR')) {
             this.processes.sort(function(a, b) { return a.getStart() < b.getStart(); });
         }
         else {
@@ -48,7 +48,7 @@ class Scheduler {
             if (this.currentProcess != null) { currentProcessId = this.currentProcess.getId(); }
 
             this.steps[this.currentStep] = new Step(this.currentStep, this.queue_pre_execution, this.reason_to_swap, currentProcessId,
-                this.reason_chosen_process, this.queue_execution, this.processes_to_add_to_queue.length > 0,
+                this.reasons_choice_next_process, this.queue_execution, this.processes_to_add_to_queue.length > 0,
                 this.processes_to_add_to_queue, this.queue_after_execution, this.total_scheduler);
 
             // go to next step
@@ -72,24 +72,24 @@ class Scheduler {
 
     determineIfSwapIsNeeded() {
         // Check if last executed proces was finished, if so then swap
-        this.reason_to_swap = ReasonsToSwap.NONE;
+        this.reason_to_swap = REASONS_TO_SWAP.get('NONE');
 
         // each planner needs to swap if no process is running or last running proces is finished
         if (this.lastProcess == null || this.lastProcess.isFinished() === true) {
-            this.reason_to_swap = ReasonsToSwap.FINISHED;
+            this.reason_to_swap = REASONS_TO_SWAP.get('FINISHED');
         }
         // SRT also swaps if their is a better/shorter process in the queue
         // check if first process in queue is better (since they are sorted short -> long)
-        if(this.reason_to_swap === ReasonsToSwap.NONE &&
-            this.type === SchedulerType.SRT && 
+        if(this.reason_to_swap === REASONS_TO_SWAP.get('NONE') &&
+            this.type === SCHEDULER_TYPES.get('SRT') && 
             this.queue_pre_execution.length > 0 && 
             this.queue_pre_execution[0].getRemaining() < this.lastProcess.getRemaining()){
-            this.reason_to_swap = ReasonsToSwap.SHORTER_PROCESS;
+            this.reason_to_swap = REASONS_TO_SWAP.get('SHORTER_PROCESS');
         }
         // RR also swaps if Q value is reached
-        if(this.reason_to_swap === ReasonsToSwap.NONE && 
-            this.type === SchedulerType.RR && this.currentQstep === this.roundQvalue){
-            this.reason_to_swap = ReasonsToSwap.Q_VALUE_REACHED;
+        if(this.reason_to_swap === REASONS_TO_SWAP.get('NONE') && 
+            this.type === SCHEDULER_TYPES.get('RR') && this.currentQstep === this.roundQvalue){
+            this.reason_to_swap = REASONS_TO_SWAP.get('Q_VALUE_REACHED');
         }
     }
 
@@ -100,13 +100,13 @@ class Scheduler {
             // since the queue is sorted for the type of scheduler, we always take first item present if available
             this.currentProcess = this.queue_execution.shift();
             // determine the reason on which we based our decision
-            if (this.type === SchedulerType.SRT) { this.reason_chosen_process = ReasonsToChoose.SHORTEST_TIME_LEFT_IN_QUEUE; }
-            else if (this.type === SchedulerType.SPN) { this.reason_chosen_process = ReasonsToChoose.SHORTEST_IN_QUEUE; }
-            else { this.reason_chosen_process = ReasonsToChoose.FIRST_IN_QUEUE; }
+            if (this.type === SCHEDULER_TYPES.get('SRT')) { this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('SHORTEST_TIME_LEFT_IN_QUEUE'); }
+            else if (this.type === SCHEDULER_TYPES.get('SPN')) { this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('SHORTEST_IN_QUEUE'); }
+            else { this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('FIRST_IN_QUEUE'); }
         }
         else {
             this.currentProcess = null;
-            this.reason_chosen_process = ReasonsToChoose.NO_PROCESS_AVAILABLE;
+            this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('NO_PROCESS_AVAILABLE');
         }
         
         // creqte array to hold processes to have to be added back to queue
@@ -114,8 +114,7 @@ class Scheduler {
         this.queue_after_execution = [...this.queue_execution];
 
         // check if the current process has to be re-added to queue, only possible with RR or SRT
-        if (this.type === SchedulerType.SRT && this.lastProcess && this.lastProcess.isFinished() === false) {
-            Logger.log("Re adding current process " + this.lastProcess.getId() + " for SRT");
+        if (this.type === SCHEDULER_TYPES.get('SRT') && this.lastProcess && this.lastProcess.isFinished() === false) {
             this.processes_to_add_to_queue.push(this.lastProcess.getId());
             this.queue_after_execution.push(this.lastProcess);
         }
@@ -158,14 +157,14 @@ class Scheduler {
         this.queue_execution = [...this.queue_pre_execution];
 
         // if we have to swap, get the process from queue
-        if(this.reason_to_swap !== ReasonsToSwap.NONE){
+        if(this.reason_to_swap !== REASONS_TO_SWAP.get('NONE')){
             this.swapProcess();
             this.currentQstep = 0; // reset RR q value
         }
         // no need to swap so reexecute the last process
         else {
             this.currentProcess = this.lastProcess;
-            this.reason_chosen_process = ReasonsToChoose.NONE;
+            this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('NONE');
         }
     }
 
@@ -194,7 +193,7 @@ class Scheduler {
     runPostExecutionPhase(){
 
         // re-add the current process, if it was stopped because of Q value
-        if (this.type === SchedulerType.RR &&
+        if (this.type === SCHEDULER_TYPES.get('RR') &&
             this.currentQstep === this.roundQvalue && this.currentProcess.isFinished() === false) {
             this.queue_after_execution.push(this.currentProcess);
             this.processes_to_add_to_queue.push(this.currentProcess.getId());
@@ -211,7 +210,7 @@ class Scheduler {
         // if we added new processes to queue, resort em if we use SPN/SRT
         // sort the queue if we added new processes
         if (this.processes_to_add_to_queue.length > 0 &&
-            (this.type === SchedulerType.SPN || this.type === SchedulerType.SRT)) {
+            (this.type === SCHEDULER_TYPES.get('SPN') || this.type === SCHEDULER_TYPES.get('SRT'))) {
             this.queue_after_execution.sort(function (a, b) {
                 if (a.getRemaining() < b.getRemaining()) {
                     return -1;
@@ -251,18 +250,18 @@ class Scheduler {
         // first row is empty
         toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + (numberOfSteps + 1)+ '"></td></tr>';
         // second row: name scheduler | each step from solution
-        if (this.getType() === SchedulerType.RR){
-            toHTML += '<tr><td class="scheduler_vertical">' + this.getType().getValue() +  ' (Q = ' + this.getQvalue() + ')</td>';
+        if (this.getType() === SCHEDULER_TYPES.get('RR')){
+            toHTML += '<tr><td class="scheduler_vertical">' + this.getType() +  ' (Q = ' + this.getQvalue() + ')</td>';
         }
         else {
-            toHTML += '<tr><td class="scheduler_vertical">' + this.getType().getValue() + '</td>';
+            toHTML += '<tr><td class="scheduler_vertical">' + this.getType() + '</td>';
         }
         for (let i = 0; i < numberOfSteps; i++) {
             if (this.total_scheduler[i] === ""){
                 toHTML += '<td class="scheduler_step" style="background-color: #FFFFFF"></td>';
             }
             else {
-                toHTML += '<td class="scheduler_step" style="background-color: ' + PROCESS_COLORS[this.total_scheduler[i]] + '">' + this.total_scheduler[i] + '</td>';
+                toHTML += '<td class="scheduler_step" style="background-color: ' + PROCESS_COLORS.get(this.total_scheduler[i]) + '">' + this.total_scheduler[i] + '</td>';
             }
         }
         toHTML += '<tr>';
@@ -280,11 +279,8 @@ class Scheduler {
 
     // Parses solution of multiple schedulers to html
     getSolutionsAsHTML(schedulers){
-        Logger.log("getSolutionsAsHTML");
-
         let numberOfSteps = 1;
 
-        Logger.log("# schedulers: " + schedulers.length);
         if(schedulers.length > 0) {
             numberOfSteps = schedulers[0].getSolution().length;
         }
@@ -294,16 +290,14 @@ class Scheduler {
             // first row is empty
             toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + (numberOfSteps + 1)+ '"></td></tr>';
             // second row: name scheduler | each step from solution
-            if (schedulers[s].getType() === SchedulerType.RR){
-                Logger.log(schedulers[s].getType().getValue() + " (Q = " + schedulers[s].getQvalue() + ") heeft " + numberOfSteps + " stappen");
-                toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType().getValue() + ' (Q = ' + schedulers[s].getQvalue() + ')</td>';
+            if (schedulers[s].getType() === SCHEDULER_TYPES.get('RR')){
+                toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType() + ' (Q = ' + schedulers[s].getQvalue() + ')</td>';
             }
             else {
-                Logger.log(schedulers[s].getType().getValue() + " heeft " + numberOfSteps + " stappen");
-                toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType().getValue() + '</td>';
+                toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType() + '</td>';
             }
             for (let i = 0; i < numberOfSteps; i++) {
-                toHTML += '<td class="scheduler_step" style="background-color: '+ PROCESS_COLORS[schedulers[s].getSolution()[i]] + '">' + schedulers[s].getSolution()[i] + '</td>';
+                toHTML += '<td class="scheduler_step" style="background-color: '+ PROCESS_COLORS.get(schedulers[s].getSolution()[i]) + '">' + schedulers[s].getSolution()[i] + '</td>';
             }
             toHTML += '<tr>';
         }

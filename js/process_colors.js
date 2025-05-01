@@ -1,9 +1,0 @@
-let PROCESS_COLORS = {};
-PROCESS_COLORS["A"] = '#fff2cc';
-PROCESS_COLORS["B"] = '#c5e0b4';
-PROCESS_COLORS["C"] = '#f8cbad';
-PROCESS_COLORS["D"] = '#b4c7e7';
-PROCESS_COLORS["E"] = '#d9d9d9';
-PROCESS_COLORS["F"] = '#ffa0a0';
-PROCESS_COLORS["G"] = '#d0a172';
-PROCESS_COLORS["H"] = '#f1b3ff';

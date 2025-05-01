@@ -1,9 +1,9 @@
 class Process {
     constructor (id, start, length) {
         this.id = id;
-        this.start = start;
-        this.length = length;
-        this.remaining = this.length;
+        this.start = Number(start);
+        this.length = Number(length);
+        this.remaining = Number(this.length);
     }
 
     getId () {
@@ -16,6 +16,14 @@ class Process {
 
     getLength () {
         return this.length;
+    }
+
+    setStart(start) {
+        this.start = start;
+    }
+
+    setLength (length) {
+        this.length = length;
     }
 
     getRemaining () {
