@@ -56,7 +56,7 @@
         <div id="beginsituatie_container" style="width: 100%">
             <!-- per stap een container + beginsituatie -->
             <div id="stap_een" style="float: left">
-                <h2>Stap 1: Voeg processen en hun gegevens toe</h2>
+                <h2>Stap 1: Voeg processen en hun gegevens toe of laad vooraf gedefineerde case</h2>
                 <br>
                 <table id="lijst_processen">
                     <tr>
@@ -67,10 +67,18 @@
                         <th></th>
                     </tr>
                 </table>
-                <br>
-                <button onclick="laadTestStartSituatieKlas();">Laad test start situatie uit slides</button>
-                <br>
-                <button onclick="laadTestAlleKleuren();">Laad test start situatie met alle kleuren</button>
+                <br><br>
+                <button onclick="laadStartSituatie('Klas');">Laad startsituatie uit slides</button>
+                <br><br>
+                <button onclick="laadStartSituatie('KleinNaarGroot');">Laad start situatie "Klein naar groot"</button>
+                <br><br>
+                <button onclick="laadStartSituatie('GrootNaarKlein');">Laad start situatie "Groot naar klein"</button>
+                <br><br>
+                <button onclick="laadStartSituatie('LangeProcessen');">Laad startsituatie "Lange procesen"</button>
+                <br><br>
+                <button onclick="laadStartSituatie('KorteProcessen');">Laad startsituatie "Korte processen"</button>
+                <br><br>
+                <button onclick="laadStartSituatie('AlleKleuren');">Laad startsituatie "alle kleuren"</button>
                 <br>
             </div>
             <div id="stap_twee" style="float: left">
