@@ -2,11 +2,11 @@ let startingSituation = new StartingSituation();
 
 function resetHuidigeSituatie() {
     // verwijder alle huidige processen
-	let usedProcessIds = startingSituation.getUsedProcessIds();
+    let usedProcessIds = startingSituation.getUsedProcessIds();
 	
-	for(let i = 0; i < usedProcessIds.length; i++) {
-		removeProcess(usedProcessIds[i]);
-	}
+    for(let i = 0; i < usedProcessIds.length; i++) {
+        removeProcess(usedProcessIds[i]);
+    }
 }
 
 function laadTestStartSituatieKlas() {
