@@ -95,19 +95,6 @@ class Scheduler {
 
     // swaps the current running process with the first from the queue
     swapProcess() {
-        // check if the current process has to be re-added to queue, only possible with RR or SRT
-        if (this.type === SchedulerType.SRT && this.lastProcess && this.lastProcess.isFinished() === false) {
-            this.processes_to_add_to_queue.push(this.lastProcess.getId());
-        }
-
-        // If RR we readd current process if Q value is reached and it aint finished
-        if (this.type === SchedulerType.RR && this.currentQstep === this.roundQvalue) {
-            // readd if there was a previous proces
-            if (this.lastProcess && this.lastProcess.isFinished() === false) {
-                this.processes_to_add_to_queue.push(this.lastProcess.getId());
-            }
-        }
-
         // check if there a process left we can take
         if (this.queue_execution.length > 0) {
             // since the queue is sorted for the type of scheduler, we always take first item present if available
@@ -120,6 +107,17 @@ class Scheduler {
         else {
             this.currentProcess = null;
             this.reason_chosen_process = ReasonsToChoose.NO_PROCESS_AVAILABLE;
+        }
+        
+        // creqte array to hold processes to have to be added back to queue
+        this.processes_to_add_to_queue = [];
+        this.queue_after_execution = [...this.queue_execution];
+
+        // check if the current process has to be re-added to queue, only possible with RR or SRT
+        if (this.type === SchedulerType.SRT && this.lastProcess && this.lastProcess.isFinished() === false) {
+            Logger.log("Re adding current process " + this.lastProcess.getId() + " for SRT");
+            this.processes_to_add_to_queue.push(this.lastProcess.getId());
+            this.queue_after_execution.push(this.lastProcess);
         }
     }
 
@@ -194,9 +192,6 @@ class Scheduler {
     // 2) Check if new processes start at this point so they must be added to queueu
     // 3) add all processes to the queue
     runPostExecutionPhase(){
-        // check if current executed process needs to readded to queue
-        this.queue_after_execution = [...this.queue_execution];
-        this.processes_to_add_to_queue = [];
 
         // re-add the current process, if it was stopped because of Q value
         if (this.type === SchedulerType.RR &&
@@ -215,7 +210,8 @@ class Scheduler {
 
         // if we added new processes to queue, resort em if we use SPN/SRT
         // sort the queue if we added new processes
-        if (this.processes_to_add_to_queue.length > 0) {
+        if (this.processes_to_add_to_queue.length > 0 &&
+            (this.type === SchedulerType.SPN || this.type === SchedulerType.SRT)) {
             this.queue_after_execution.sort(function (a, b) {
                 if (a.getRemaining() < b.getRemaining()) {
                     return -1;
@@ -250,13 +246,6 @@ class Scheduler {
 
     // Parses solution of one scheduler to html
     getSolutionAsHTML(){
-        // map the processes their colors to id
-        let processColors = {}
-
-        this.processes.forEach(function addColor(process){
-           processColors[process.getId()] = process.getHtmlColor();
-        });
-
         let numberOfSteps = this.total_scheduler.length;
         let toHTML = '<table>';
         // first row is empty
@@ -273,7 +262,7 @@ class Scheduler {
                 toHTML += '<td class="scheduler_step" style="background-color: #FFFFFF"></td>';
             }
             else {
-                toHTML += '<td class="scheduler_step" style="background-color: ' + processColors[this.total_scheduler[i]] + '">' + this.total_scheduler[i] + '</td>';
+                toHTML += '<td class="scheduler_step" style="background-color: ' + PROCESS_COLORS[this.total_scheduler[i]] + '">' + this.total_scheduler[i] + '</td>';
             }
         }
         toHTML += '<tr>';
@@ -292,14 +281,6 @@ class Scheduler {
     // Parses solution of multiple schedulers to html
     getSolutionsAsHTML(schedulers){
         Logger.log("getSolutionsAsHTML");
-        // map the processes their colors to id
-        let processColors = {}
-
-        this.processes.forEach(function addColor(process){
-            processColors[process.getId()] = process.getHtmlColor();
-        });
-
-        Logger.log("colors mapped");
 
         let numberOfSteps = 1;
 
@@ -322,7 +303,7 @@ class Scheduler {
                 toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType().getValue() + '</td>';
             }
             for (let i = 0; i < numberOfSteps; i++) {
-                toHTML += '<td class="scheduler_step" style="background-color: '+ processColors[schedulers[s].getSolution()[i]] + '">' + schedulers[s].getSolution()[i] + '</td>';
+                toHTML += '<td class="scheduler_step" style="background-color: '+ PROCESS_COLORS[schedulers[s].getSolution()[i]] + '">' + schedulers[s].getSolution()[i] + '</td>';
             }
             toHTML += '<tr>';
         }

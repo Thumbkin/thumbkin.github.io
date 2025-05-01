@@ -52,23 +52,40 @@
             }
         </style>
     </head>
-    <body onload="renderOpgave();">
-        <div id="opgave"></div>
-        <br>
-        <div>
-            Gekozen planners:
-            <ul>
-                <li>FCFS</li>
-                <li>SRT</li>
-                <li>SPN</li>
-                <li>RR (Q = 3, 4, 5)</li>
-            </ul>
+    <body onload="addNewProcessRow();">
+        <div id="beginsituatie_container" style="width: 100%">
+            <!-- per stap een container + beginsituatie -->
+            <div id="stap_een" style="float: left">
+                <h2>Stap 1: Voeg processen en hun gegevens toe</h2>
+                <br>
+                <table id="lijst_processen">
+                    <tr>
+                        <th>Proces</th>
+                        <th>Start op</th>
+                        <th>Lengte</th>
+                        <!-- kolom met actiesymbool -->
+                        <th></th>
+                    </tr>
+                </table>
+            </div>
+            <div id="stap_twee" style="float: left">
+                <h2>Stap 2: Kies de gewenste planners</h2>
+                <input type="checkbox" onclick="alert('clicked')">FCFS</input><br>
+                <input type="checkbox" onclick="alert('clicked')">SPN</input><br>
+                <input type="checkbox" onclick="alert('clicked')">SRT</input><br>
+                <input type="checkbox" onclick="alert('clicked')">RR </input><br>
+                <input type="checkbox" onclick="alert('clicked')">RR </input><br>
+                <input type="checkbox" onclick="alert('clicked')">RR </input><br>
+                <br>
+                <button onclick="runSchedulers();">Bereken planners</button>
+            </div>
+            <div id="beginsituatie">
+
+            </div>
         </div>
         <br>
-        <button onclick="runSchedulers();">Maak planning</button>
-        <br>
-        <div id="results_scheduler"></div>
-        <br>
-        <div id="logger"></div>
+        <div id="resultaten_planners">
+            <H2>Resultaten</H2>
+        </div>
     </body>
 </html>
