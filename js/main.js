@@ -1,6 +1,17 @@
 let startingSituation = new StartingSituation();
 
+function resetHuidigeSituatie() {
+    // verwijder alle huidige processen
+	let usedProcessIds = startingSituation.getUsedProcessIds();
+	
+	for(let i = 0; i < usedProcessIds.length; i++) {
+		removeProcess(usedProcessIds[i]);
+	}
+}
+
 function laadTestStartSituatieKlas() {
+    resetHuidigeSituatie();
+    
     const test_situatie = new Map();
     test_situatie.set("A", [0, 7]);
     test_situatie.set("B", [1, 4]);
@@ -14,7 +25,9 @@ function laadTestStartSituatieKlas() {
     test_situatie.forEach(voegProcesToeUitTestStart)
 }
 
-function laadTestAlleKleuren() {
+function laadTestAlleKleuren() {    
+    resetHuidigeSituatie();
+    
     const test_situatie = new Map();
     test_situatie.set("A", [0, 7]);
     test_situatie.set("B", [1, 4]);
