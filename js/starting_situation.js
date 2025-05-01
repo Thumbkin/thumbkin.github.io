@@ -25,6 +25,16 @@ class StartingSituation {
         }
     }
 
+    getUsedProcessIds(){
+        let usedProcessIds = [];
+    	for(let i = 0; i < PROCESS_IDS.length; i++) {
+    		if(this.used_process_ids.get(PROCESS_IDS[i]) === true){
+    			usedProcessIds.push(PROCESS_IDS[i]);
+    		}
+    	}
+    	return usedProcessIds;
+    }
+    
     getNextUnusedProcessId(){
         for(let i = 0; i < PROCESS_IDS.length; i++) {
             if(this.used_process_ids.get(PROCESS_IDS[i]) === false){
