@@ -1,0 +1,47 @@
+table {
+    margin: 0px;
+    padding: 0px;
+    border-collapse: collapse;
+}
+
+td {
+    height: 20px;
+    width: 30px;
+    text-align: right;
+}
+
+td.scheduler_vertical {
+    border-right: 3px solid black;
+    width: 100px;
+}
+
+td.scheduler_step {
+    border: 1px solid black;
+    text-align: center;
+}
+
+td.scheduler_vertical_no_border {
+    width: 100px;
+}
+
+td.scheduler_time {
+    border-top: 3px solid black;
+}
+
+td.starting_vertical_top {
+    border: 1px solid black;
+    border-bottom: 3px solid black;
+    text-align: center;
+}
+
+td.starting_vertical_process {
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 3px solid black;
+    text-align: center;
+}
+
+td.step_one_process {
+    border: 1px solid black;
+    text-align: center;
+}

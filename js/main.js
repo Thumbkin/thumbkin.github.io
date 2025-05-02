@@ -1,8 +1,7 @@
-let STARTING_SITUATION = new StartingSituation();
-let PLANNED_SCHEDULERS = [];
+const PLANNER_EXCERSIZE = new PlannerExcersize();
 
 function resetHuidigeSituatie() {
-    STARTING_SITUATION = new StartingSituation();
+    PLANNER_EXCERSIZE.resetStartingSituation();
 
     document.getElementById("lijst_processen").innerHTML =
         "<tr>" +
@@ -15,242 +14,114 @@ function resetHuidigeSituatie() {
     addNewProcessRow();
 }
 
-// laad een vooraf genmaakte situatie zoals in de slides
-function laadStartSituatie(type) {
-    resetHuidigeSituatie();
-
-    const test_situatie = new Map();
-    if(type === "Klas") { laadStartSituatieKlas() };
-    if(type === "GrootNaarKlein") { laadStartSituatieGrootNaarKlein() };
-    if(type === "KleinNaarGroot") { laadStartSituatieKleinNaarGroot() };
-    if(type === "LangeProcessen") { laadStartSituatieLangeProcessen() };
-    if(type === "KorteProcessen") { laadStartSituatieKorteProcessen() };
-    if(type === "AlleKleuren") { laadStartSituatieAlleKleuren() };
-}
-
-function laadStartSituatieKlas() {
-    voegStartProcesToe("A", 0, 7);
-    voegStartProcesToe("B", 1, 4);
-    voegStartProcesToe("C", 2, 2);
-    voegStartProcesToe("D", 3, 10);
-    voegStartProcesToe("E", 4, 1);
-    voegStartProcesToe("F", 5, 6);
-    voegStartProcesToe("G", 7, 3);
-    voegStartProcesToe("H", 20, 2);
-}
-
-function laadStartSituatieGrootNaarKlein() {
-    voegStartProcesToe("A", 0, 12);
-    voegStartProcesToe("B", 1, 10);
-    voegStartProcesToe("C", 2, 8);
-    voegStartProcesToe("D", 3, 6);
-    voegStartProcesToe("E", 4, 4);
-    voegStartProcesToe("F", 5, 2);
-}
-
-function laadStartSituatieKleinNaarGroot() {
-    voegStartProcesToe("A", 0, 2);
-    voegStartProcesToe("B", 1, 4);
-    voegStartProcesToe("C", 2, 6);
-    voegStartProcesToe("D", 3, 8);
-    voegStartProcesToe("E", 4, 10);
-    voegStartProcesToe("F", 5, 12);
-}
-
-function laadStartSituatieKorteProcessen() {
-    voegStartProcesToe("A", 0, 5);
-    voegStartProcesToe("B", 0, 4);
-    voegStartProcesToe("C", 0, 8);
-    voegStartProcesToe("D", 2, 6);
-    voegStartProcesToe("E", 3, 3);
-    voegStartProcesToe("F", 5, 5);
-    voegStartProcesToe("G", 6, 2);
-    voegStartProcesToe("H", 6, 5);
-}
-
-function laadStartSituatieLangeProcessen() {
-    voegStartProcesToe("A", 0, 7);
-    voegStartProcesToe("B", 0, 9);
-    voegStartProcesToe("C", 0, 8);
-    voegStartProcesToe("D", 2, 5);
-    voegStartProcesToe("E", 3, 10);
-    voegStartProcesToe("F", 4, 4);
-    voegStartProcesToe("G", 4, 2);
-    voegStartProcesToe("H", 6, 5);
-}
-
-function laadStartSituatieAlleKleuren() {
-    voegStartProcesToe("A", 0, 7);
-    voegStartProcesToe("B", 1, 4);
-    voegStartProcesToe("C", 2, 2);
-    voegStartProcesToe("D", 3, 10);
-    voegStartProcesToe("E", 4, 1);
-    voegStartProcesToe("F", 5, 6);
-    voegStartProcesToe("G", 7, 3);
-    voegStartProcesToe("H", 20, 2);
-    voegStartProcesToe("I", 1, 4);
-    voegStartProcesToe("J", 2, 2);
-    voegStartProcesToe("K", 3, 10);
-    voegStartProcesToe("L", 4, 1);
-    voegStartProcesToe("M", 5, 6);
-    voegStartProcesToe("N", 7, 3);
-    voegStartProcesToe("O", 20, 2);
-    voegStartProcesToe("P", 1, 4);
-    voegStartProcesToe("Q", 2, 2);
-    voegStartProcesToe("R", 3, 10);
-    voegStartProcesToe("S", 4, 1);
-    voegStartProcesToe("T", 5, 6);
-    voegStartProcesToe("U", 7, 3);
-    voegStartProcesToe("V", 20, 2);
-    voegStartProcesToe("W", 3, 10);
-    voegStartProcesToe("X", 4, 1);
-    voegStartProcesToe("Y", 5, 6);
-    voegStartProcesToe("Z", 7, 3);
-}
-
-function voegStartProcesToe(process_id, start, length){
-    document.getElementById("dd_start_" + process_id).value = start;
-    document.getElementById("dd_length_" + process_id).value = length;
-
-    addProcess(process_id);
-}
-
 function runSchedulers () {
-    if(STARTING_SITUATION.isValid()) {
-        PLANNED_SCHEDULERS = [];
-        document.getElementById("resultaten_planners").innerHTML = "";
+    // eerst controleren of we wel minstens een proces hebben
+    if(PLANNER_EXCERSIZE.getStartingSituation().isValid()) {
+        // chcken of we minsntes 1 planner hebben geselecteerd
+        PLANNER_EXCERSIZE.resetSchedulers();
 
-        let PROCESSES = STARTING_SITUATION.getProcesses();
-        let scheduler_fcfs = new Scheduler(SCHEDULER_TYPES.get('FCFS'), 0, PROCESSES);
-        scheduler_fcfs.executePlanner();
-        PLANNED_SCHEDULERS.push(scheduler_fcfs);
+        let cb_ids = [ 'FCFS', 'SPN', 'SRT', 'RR_one', 'RR_two', 'RR_three'];
 
-        PROCESSES = STARTING_SITUATION.getProcesses();
-        let scheduler_spn = new Scheduler(SCHEDULER_TYPES.get('SPN'), 0, PROCESSES);
-        scheduler_spn.executePlanner();
-        PLANNED_SCHEDULERS.push(scheduler_spn);
+        for(let i = 0; i < cb_ids.length; i++){
+            if(document.getElementById('cb_' + cb_ids[i]).checked === true){
+                if(cb_ids[i].startsWith('RR')){
+                    let q_value = Number(document.getElementById('sel_' + cb_ids[i] + '_q').value);
+                    PLANNER_EXCERSIZE.addScheduler(SCHEDULER_TYPES.get('RR'), q_value);
+                }
+                else {
+                    PLANNER_EXCERSIZE.addScheduler(SCHEDULER_TYPES.get(cb_ids[i]), 0);
+                }
+            }
+        }
 
-        PROCESSES = STARTING_SITUATION.getProcesses();
-        let scheduler_srt = new Scheduler(SCHEDULER_TYPES.get('SRT'), 0, PROCESSES);
-        scheduler_srt.executePlanner();
-        PLANNED_SCHEDULERS.push(scheduler_srt);
+        if(PLANNER_EXCERSIZE.hasAtLeastOnePlanner()) {
+            PLANNER_EXCERSIZE.executeSchedulers();
 
-        PROCESSES = STARTING_SITUATION.getProcesses();
-        let scheduler_rr_3 = new Scheduler(SCHEDULER_TYPES.get('RR'), 3, PROCESSES);
-        scheduler_rr_3.executePlanner();
-        PLANNED_SCHEDULERS.push(scheduler_rr_3);
+            document.getElementById("resultaten_planners").innerHTML = "";
+            // change the value of the slider to total amountof steps and auto set it to last step
+            document.getElementById("range_steps").max = PLANNER_EXCERSIZE.getTotalNumberOfSteps();
+            document.getElementById("range_steps").value = PLANNER_EXCERSIZE.getTotalNumberOfSteps();
 
-        PROCESSES = STARTING_SITUATION.getProcesses();
-        let scheduler_rr_4 = new Scheduler(SCHEDULER_TYPES.get('RR'), 4, PROCESSES);
-        scheduler_rr_4.executePlanner();
-        PLANNED_SCHEDULERS.push(scheduler_rr_4);
-
-        PROCESSES = STARTING_SITUATION.getProcesses();
-        let scheduler_rr_5 = new Scheduler(SCHEDULER_TYPES.get('RR'), 5, PROCESSES);
-        scheduler_rr_5.executePlanner();
-        PLANNED_SCHEDULERS.push(scheduler_rr_5);
-
-        // change the value of the slider to total amountof steps and auto set it to last step
-        document.getElementById("range_steps").max = scheduler_fcfs.getTotalNumberOfSteps();
-        document.getElementById("range_steps").value = scheduler_fcfs.getTotalNumberOfSteps();
-
-        renderStep(undefined, scheduler_fcfs.getTotalNumberOfSteps(), scheduler_fcfs.getTotalNumberOfProcesses());
+            renderStep(undefined, PLANNER_EXCERSIZE.getTotalNumberOfSteps(), PLANNER_EXCERSIZE.getTotalNumberOfProcesses());
+        }
+        else {
+            alert("Er moet minstens 1 planner aangeduid worden!");
+        }
     }
     else {
         alert("Er moet minstens 1 proces gepland worden met resterende uitvoeringstijd!");
     }
 }
 
-function changeProcessStart(id, start){
-    alert('ChangeProcess ' + id + " start to " + start);
-    STARTING_SITUATION.updateStartProcess(id, start);
+function updateProcessStart(process_id){
+    let start = document.getElementById("dd_start_" + process_id).value;
+    PLANNER_EXCERSIZE.updateStartTimeProcess(process_id, start);
 }
 
-function changeProcessLength(id, length){
-    alert('ChangeProcess ' + id + " length to " + length);
-    STARTING_SITUATION.updateLengthProcess(id, length);
+function updateProcessLength(process_id){
+    let length = document.getElementById("dd_length_" + process_id).value;
+    PLANNER_EXCERSIZE.updateLengthProcess(process_id, length);
 }
 
 function addProcess(process_id) {
     // get the values from the drop downs
     let start = document.getElementById("dd_start_" + process_id).value;
     let length = document.getElementById("dd_length_" + process_id).value;
-    STARTING_SITUATION.addProcess(new Process(process_id, start, length));
-    // change the icon in the table to edit instead of add
+    PLANNER_EXCERSIZE.addProcess(process_id, start, length);
+    // add on change event now cause process is added to solution, but it can be changed with DDs
+
+    document.getElementById("dd_start_" + process_id).onchange = "updateProcessStart(" + process_id + ")";
+    document.getElementById("dd_length_" + process_id).onchange = "updateProcessLength(" + process_id + ")";
+
+        // change the icon in the table to edit instead of add
     document.getElementById("btns_" + process_id).innerHTML = "<button onclick=\"removeProcess('" + process_id + "');\">Remove</buton>";
 
     // if we have an unused color left, add a new row to add
-    if(STARTING_SITUATION.getAmountOfProcesses() < PROCESS_IDS.length){
+    if(PLANNER_EXCERSIZE.getTotalNumberOfProcesses() < PROCESS_IDS.length){
         addNewProcessRow();
     }
 
     // render de nieuwe startsituatie
-    document.getElementById("beginsituatie").innerHTML = STARTING_SITUATION.getAsHTML();
+    document.getElementById("beginsituatie").innerHTML = HTML_GENERATOR.getStartingSituationAsHTML(PLANNER_EXCERSIZE.getStartingSituation());
 }
 
 function removeProcess(process_id) {
-    STARTING_SITUATION.removeProcess(process_id);
+    PLANNER_EXCERSIZE.removeProcess(process_id);
     // remove row from table in step 1
     document.getElementById("table_row_"+ process_id).remove();
     // if we removed the last process, add a dummy again
-    if(STARTING_SITUATION.getAmountOfProcesses() <= 0){
+    if(PLANNER_EXCERSIZE.getTotalNumberOfProcesses() <= 0){
         addNewProcessRow();
     }
 
     // render de nieuwe startsituatie
-    document.getElementById("beginsituatie").innerHTML = STARTING_SITUATION.getAsHTML();
+    document.getElementById("beginsituatie").innerHTML = HTML_GENERATOR.getStartingSituationAsHTML(PLANNER_EXCERSIZE.getStartingSituation());
 }
 
 function addNewProcessRow (){
-    let process_id = STARTING_SITUATION.getNextUnusedProcessId();
+    let process_id = PLANNER_EXCERSIZE.getNextUnusedProcessId();
 
-    let innerHTML = document.getElementById("lijst_processen").innerHTML
-    innerHTML += "<tr id=\"table_row_"+ process_id + "\">";
-    innerHTML += "<td class='step_one_process' style='background-color: " + PROCESS_COLORS.get(process_id) +"'>" + process_id + "</td>";
-    innerHTML += "<td>" + generateDropDown(process_id, "start") + "</td>";
-    innerHTML += "<td>" + generateDropDown(process_id, "length") + "</td>";
-    innerHTML += "<td id=\"btns_" + process_id + "\" ><button onclick=\"addProcess('" + process_id + "');\">Add</buton></td>";
-    innerHTML += "</tr>";
-    document.getElementById("lijst_processen").innerHTML = innerHTML
+    let new_inner_HTML = document.getElementById("lijst_processen").innerHTML
+    new_inner_HTML += "<tr id=\"table_row_"+ process_id + "\">";
+    new_inner_HTML += "<td class='step_one_process' style='background-color: " + PROCESS_COLORS.get(process_id) +"'>" + process_id + "</td>";
+    new_inner_HTML += "<td>" + HTML_GENERATOR.generateDropDown(process_id, "start") + "</td>";
+    new_inner_HTML += "<td>" + HTML_GENERATOR.generateDropDown(process_id, "length") + "</td>";
+    new_inner_HTML += "<td id=\"btns_" + process_id + "\" ><button onclick=\"addProcess('" + process_id + "');\">Add</buton></td>";
+    new_inner_HTML += "</tr>";
+    document.getElementById("lijst_processen").innerHTML = new_inner_HTML
 }
 
-// genereert html code voor een drop down voor start of lengte
-function generateDropDown (process_id, type) {
-    let innerHTML = "<select id=\"dd_" + type + "_" + process_id + "\">";
-    let i = 0;
-    // if type = length, then start from 1
-    if (type === "length") i = 1;
-    // add numbers 0 to 50 as possible values
-    for (; i <= 50; i++) {
-        innerHTML += "<option value=\"" + i + "\">" + i + "</option>";
-    }
-    innerHTML += "</select>";
-    return innerHTML
-}
-
-function generateQueue(queue, max_queue_length){
-    let toHTML = '<table><tr>';
-    for (let i = 0; i < queue.length; i++) {
-        toHTML += '<td class="scheduler_step" style="background-color: '+ PROCESS_COLORS.get(queue[i].getId()) + '">' + queue[i].getId() + '</td>';
-    }
-    for (let i = queue.length; i < max_queue_length; i++) {
-        toHTML += '<td class="scheduler_step"></td>';
-    }
-    toHTML += '</tr></table>';
-
-    return toHTML;
-}
-
-function renderStep(step, step_number, max_length_queue) {
-    if (step) {
+function renderStep(step_number, max_length_queue) {
+    if (step_number) {
+        let step = PLANNER_EXCERSIZE.getSchedulers()[0].getStep(step_number);
         // fill in the pre exec, exec, post exec sections
-        document.getElementById("h_timestamp").innerHTML = "Tijdstip: " + step.getNumber();
+        document.getElementById("h_timestamp").innerHTML = "Tijdstip: " + step_number;
         // show empty queues since we at last step
-        document.getElementById("queue_pre_exec").innerHTML = generateQueue(step.getQueueBeforeExecution(), max_length_queue);
-        document.getElementById("queue_exec").innerHTML = generateQueue(step.getQueueExecution(), max_length_queue);
-        document.getElementById("queue_post_exec").innerHTML = generateQueue(step.getQueueAfterExecution(), max_length_queue);
+        document.getElementById("queue_pre_exec").innerHTML = HTML_GENERATOR.generateQueue(step.getQueueBeforeExecution(), max_length_queue);
+        document.getElementById("queue_exec").innerHTML = HTML_GENERATOR.generateQueue(step.getQueueExecution(), max_length_queue);
+        document.getElementById("queue_post_exec").innerHTML = HTML_GENERATOR.generateQueue(step.getQueueAfterExecution(), max_length_queue);
 
-        document.getElementById("resultaten_planners").innerHTML = "<br>" + PLANNED_SCHEDULERS[0].getSolutionsFromStepAsHTML(PLANNED_SCHEDULERS, step_number);
+        document.getElementById("resultaten_planners").innerHTML = "<br>" + HTML_GENERATOR.getSchedulerSolutionsAsHTML(PLANNER_EXCERSIZE.getSchedulers(), step_number);
     }
     // final stap = full solution
     else
@@ -258,16 +129,16 @@ function renderStep(step, step_number, max_length_queue) {
         // fill in the pre exec, exec, post exec sections
         document.getElementById("h_timestamp").innerHTML = "Tijdstip: " + step_number;
         // show empty queues since we at last step
-        let queue_html = generateQueue([], max_length_queue);
+        let queue_html = HTML_GENERATOR.generateQueue([], max_length_queue);
         document.getElementById("queue_pre_exec").innerHTML = queue_html;
         document.getElementById("queue_exec").innerHTML = queue_html;
         document.getElementById("queue_post_exec").innerHTML = queue_html;
 
-        document.getElementById("resultaten_planners").innerHTML = "<br>" + PLANNED_SCHEDULERS[0].getSolutionsAsHTML(PLANNED_SCHEDULERS);
+        document.getElementById("resultaten_planners").innerHTML = "<br>" + HTML_GENERATOR.getSchedulerSolutionsAsHTML(PLANNER_EXCERSIZE.getSchedulers());
     }
 
     document.getElementById("btn_prev_step").disabled = (step_number === 0);
-    document.getElementById("btn_next_step").disabled = (step_number === PLANNED_SCHEDULERS[0].getTotalNumberOfProcesses());
+    document.getElementById("btn_next_step").disabled = (step_number === PLANNER_EXCERSIZE.getTotalNumberOfProcesses());
 }
 
 function loadPreviousStep() {
@@ -285,10 +156,12 @@ function loadCurrentStep() {
 function loadStep(step_number){
     document.getElementById("range_steps").value = step_number;
     // render the step
-    let max_length_queue = PLANNED_SCHEDULERS[0].getTotalNumberOfProcesses();
-    renderStep(PLANNED_SCHEDULERS[0].getStep(step_number), step_number, max_length_queue);
+    let max_length_queue = PLANNER_EXCERSIZE.getTotalNumberOfProcesses();
+    renderStep(step_number, max_length_queue);
 }
 
 function animateRemainingSteps(){
+    let currentStep = 0;
+
     alert('Nog niet beschikbaar');
 }

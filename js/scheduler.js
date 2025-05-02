@@ -29,17 +29,13 @@ class Scheduler {
         return this.total_steps;
     }
 
-    getTotalNumberOfProcesses(){
-        return this.processes.length;
-    }
-    
     executePlanner(){
         // calculate the total amount of steps
         this.calculateTotalAmountOfSteps();
 
         this.current_step = 0;
 
-        // Sort processes based on start time (FCFS, RR), or timeremaining (SPN/SRT)
+        // Sort processes based on start time (FCFS, RR), or time remaining (SPN/SRT)
         if (this.type === SCHEDULER_TYPES.get('FCFS') || this.type === SCHEDULER_TYPES.get('RR')) {
             this.processes.sort(function(a, b) { return a.getStart() < b.getStart(); });
         }
@@ -79,14 +75,14 @@ class Scheduler {
     }
 
     determineIfSwapIsNeeded() {
-        // Check if last executed proces was finished, if so then swap
+        // Check if last executed process was finished, if so then swap
         this.reason_to_swap = REASONS_TO_SWAP.get('NONE');
 
-        // each planner needs to swap if no process is running or last running proces is finished
+        // each planner needs to swap if no process is running or last running process is finished
         if (this.last_process == null || this.last_process.isFinished() === true) {
             this.reason_to_swap = REASONS_TO_SWAP.get('FINISHED');
         }
-        // SRT also swaps if their is a better/shorter process in the queue
+        // SRT also swaps if there is a better/shorter process in the queue
         // check if first process in queue is better (since they are sorted short -> long)
         if(this.reason_to_swap === REASONS_TO_SWAP.get('NONE') &&
             this.type === SCHEDULER_TYPES.get('SRT') && 
@@ -103,7 +99,7 @@ class Scheduler {
 
     // swaps the current running process with the first from the queue
     swapProcess() {
-        // check if there a process left we can take
+        // check if there is a process left we can take
         if (this.queue_execution.length > 0) {
             // since the queue is sorted for the type of scheduler, we always take first item present if available
             this.current_process = this.queue_execution.shift();
@@ -117,9 +113,9 @@ class Scheduler {
             this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('NO_PROCESS_AVAILABLE');
         }
         
-        // creqte array to hold processes to have to be added back to queue
+        // create array to hold processes to have to be added back to queue
         this.processes_to_add_to_queue = [];
-        this.queue_after_execution = [...this.queue_execution];
+        this.queue_after_execution = this.#cloneQueue(this.queue_execution);
 
         // check if the current process has to be re-added to queue, only possible with RR or SRT
         if (this.type === SCHEDULER_TYPES.get('SRT') && this.last_process && this.last_process.isFinished() === false) {
@@ -145,7 +141,7 @@ class Scheduler {
         this.queue_pre_execution = [];
         // if not first step, copy the queue from the previous step
         if (this.current_step > 0) {
-            this.queue_pre_execution = [...this.steps[this.current_step - 1].getQueueAfterExecution()];
+            this.queue_pre_execution = this.#cloneQueue(this.steps[this.current_step - 1].getQueueAfterExecution());
             this.last_process = this.current_process;
         }
         // if first step add all processes to queue who start at 0
@@ -162,7 +158,7 @@ class Scheduler {
 
         // copy the queue from pre execution phase to execution phase here
         // because if we have to swap we remove it from execution queue first before actual executing
-        this.queue_execution = [...this.queue_pre_execution];
+        this.queue_execution = this.#cloneQueue(this.queue_pre_execution);
 
         // if we have to swap, get the process from queue
         if(this.reason_to_swap !== REASONS_TO_SWAP.get('NONE')){
@@ -196,7 +192,7 @@ class Scheduler {
 
     // execute the steps after executing
     // 1) check if current executed process needs to readded to queue
-    // 2) Check if new processes start at this point so they must be added to queueu
+    // 2) Check if new processes start at this point so they must be added to queue
     // 3) add all processes to the queue
     runPostExecutionPhase(){
 
@@ -231,10 +227,6 @@ class Scheduler {
         }
     }
 
-    getSteps() {
-        return this.steps;
-    }
-
     getStep(nr) {
         return this.steps[nr];
     }
@@ -251,110 +243,12 @@ class Scheduler {
         return this.round_q_value;
     }
 
-    // Parses solution of one scheduler to html
-    getSolutionAsHTML(){
-        let number_of_steps = this.total_scheduler.length;
-        let toHTML = '<table>';
-        // first row is empty
-        toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + (number_of_steps + 1)+ '"></td></tr>';
-        // second row: name scheduler | each step from solution
-        if (this.getType() === SCHEDULER_TYPES.get('RR')){
-            toHTML += '<tr><td class="scheduler_vertical">' + this.getType() +  ' (Q = ' + this.getQvalue() + ')</td>';
-        }
-        else {
-            toHTML += '<tr><td class="scheduler_vertical">' + this.getType() + '</td>';
-        }
-        for (let i = 0; i < number_of_steps; i++) {
-            if (this.total_scheduler[i] === ""){
-                toHTML += '<td class="scheduler_step" style="background-color: #FFFFFF"></td>';
-            }
-            else {
-                toHTML += '<td class="scheduler_step" style="background-color: ' + PROCESS_COLORS.get(this.total_scheduler[i]) + '">' + this.total_scheduler[i] + '</td>';
-            }
-        }
-        toHTML += '<tr>';
-        // third row: empty
-        toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + number_of_steps + '"></td></tr>';
-        // fourth row: time units
-        toHTML += '<tr><td class="scheduler_vertical_no_border">0</td>';
-        for (let i = 1; i <= number_of_steps + 1; i++) {
-            toHTML += '<td class="scheduler_time">' + i + '</td>';
-        }
-        toHTML += '</tr></table>';
+    #cloneQueue (queue) {
+        let clonedQueue = [];
+        queue.forEach(function cloneProcess(process){
+            clonedQueue.push(Object.assign(Object.create(Object.getPrototypeOf(process)), process));
+        });
 
-        return toHTML;
-    }
-
-    // Parses solution of multiple schedulers to html
-    getSolutionsAsHTML(schedulers){
-        let number_of_steps = 1;
-
-        if(schedulers.length > 0) {
-            number_of_steps = schedulers[0].getSolution().length;
-        }
-        let toHTML = '<table>';
-        // repeat for each schedulder solution
-        for(let s = 0; s < schedulers.length; s++){
-            // first row is empty
-            toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + (number_of_steps + 1)+ '"></td></tr>';
-            // second row: name scheduler | each step from solution
-            if (schedulers[s].getType() === SCHEDULER_TYPES.get('RR')){
-                toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType() + ' (Q = ' + schedulers[s].getQvalue() + ')</td>';
-            }
-            else {
-                toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType() + '</td>';
-            }
-            for (let i = 0; i < number_of_steps; i++) {
-                toHTML += '<td class="scheduler_step" style="background-color: '+ PROCESS_COLORS.get(schedulers[s].getSolution()[i]) + '">' + schedulers[s].getSolution()[i] + '</td>';
-            }
-            toHTML += '<tr>';
-        }
-        // filler row: empty
-        toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + number_of_steps + '"></td></tr>';
-        // last row: time units
-        toHTML += '<tr><td class="scheduler_vertical_no_border">0</td>';
-        for (let i = 1; i <= number_of_steps + 1; i++) {
-            toHTML += '<td class="scheduler_time">' + i + '</td>';
-        }
-        toHTML += '</tr></table>';
-
-        return toHTML;
-    }
-
-    // Parses solution of multiple schedulers to html
-    getSolutionsFromStepAsHTML(schedulers, step_number){
-        let number_of_steps = 1;
-
-        if(schedulers.length > 0) {
-            number_of_steps = schedulers[0].getSolution().length;
-        }
-
-        let toHTML = '<table>';
-        // repeat for each schedulder solution
-        for(let s = 0; s < schedulers.length; s++){
-            // first row is empty
-            toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + (number_of_steps + 1)+ '"></td></tr>';
-            // second row: name scheduler | each step from solution
-            if (schedulers[s].getType() === SCHEDULER_TYPES.get('RR')){
-                toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType() + ' (Q = ' + schedulers[s].getQvalue() + ')</td>';
-            }
-            else {
-                toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType() + '</td>';
-            }
-            for (let i = 0; i < step_number; i++) {
-                toHTML += '<td class="scheduler_step" style="background-color: '+ PROCESS_COLORS.get(schedulers[s].getSolution()[i]) + '">' + schedulers[s].getSolution()[i] + '</td>';
-            }
-            toHTML += '<tr>';
-        }
-        // filler row: empty
-        toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + number_of_steps + '"></td></tr>';
-        // last row: time units
-        toHTML += '<tr><td class="scheduler_vertical_no_border">0</td>';
-        for (let i = 1; i <= number_of_steps + 1; i++) {
-            toHTML += '<td class="scheduler_time">' + i + '</td>';
-        }
-        toHTML += '</tr></table>';
-
-        return toHTML;
+        return clonedQueue
     }
 }

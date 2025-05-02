@@ -8,53 +8,11 @@
         <script type="text/javascript" src='./js/starting_situation.js'> </script>
         <script type="text/javascript" src='./js/step.js'> </script>
         <script type="text/javascript" src='./js/scheduler.js'> </script>
+        <script type="text/javascript" src='js/planner_exercise.js'> </script>
+        <script type="text/javascript" src='./js/html_generator.js'> </script>
         <script type="text/javascript" src='./js/main.js'> </script>
-        <style>
-            table {
-                margin: 0px;
-                padding: 0px;
-                border-collapse: collapse;
-            }
-            td {
-                height: 20px;
-                width: 30px;
-                text-align: right;
-            }
-            td.scheduler_vertical {
-                border-right: 3px solid black;
-                width: 100px;
-            }
-            td.scheduler_step {
-                border: 1px solid black;
-                text-align: center;
-            }
-            td.scheduler_vertical_no_border {
-                width: 100px;
-            }
-            td.scheduler_time {
-                border-top: 3px solid black;
-            }
-
-            td.starting_vertical_top {
-                border: 1px solid black;
-                border-bottom: 3px solid black;
-                text-align: center;
-            }
-            td.starting_vertical_process {
-                border-left: 1px solid black;
-                border-bottom: 1px solid black;
-                border-right: 3px solid black;
-                text-align: center;
-            }
-            td.step_one_process {
-                border: 1px solid black;
-                text-align: center;
-            }
-
-            .stepscontainer {
-                width: 100%; /* Width of the outside container */
-            }
-        </style>
+        <script type="text/javascript" src='./js/exercises.js'> </script>
+        <link rel="stylesheet" href='./css/styling.css'>
     </head>
     <body onload="addNewProcessRow();">
         <div id="beginsituatie_container" style="width: 100%">
@@ -72,27 +30,27 @@
                     </tr>
                 </table>
                 <br><br>
-                <button onclick="laadStartSituatie('Klas');">Laad startsituatie uit slides</button>
+                <button onclick="laadStartSituatie('Klas');">Laad oefening uit slides</button>
                 <br><br>
-                <button onclick="laadStartSituatie('KleinNaarGroot');">Laad start situatie "Klein naar groot"</button>
+                <button onclick="laadStartSituatie('KleinNaarGroot');">Laad oefening "Klein naar groot"</button>
                 <br><br>
-                <button onclick="laadStartSituatie('GrootNaarKlein');">Laad start situatie "Groot naar klein"</button>
+                <button onclick="laadStartSituatie('GrootNaarKlein');">Laad oefening "Groot naar klein"</button>
                 <br><br>
-                <button onclick="laadStartSituatie('LangeProcessen');">Laad startsituatie "Lange procesen"</button>
+                <button onclick="laadStartSituatie('LangeProcessen');">Laad oefening "Lange procesen"</button>
                 <br><br>
-                <button onclick="laadStartSituatie('KorteProcessen');">Laad startsituatie "Korte processen"</button>
+                <button onclick="laadStartSituatie('KorteProcessen');">Laad oefening "Korte processen"</button>
                 <br><br>
-                <button onclick="laadStartSituatie('AlleKleuren');">Laad startsituatie "alle kleuren"</button>
+                <button onclick="laadStartSituatie('AlleKleuren');">Laad oefening "alle kleuren"</button>
                 <br>
             </div>
             <div id="stap_twee" style="float: left">
                 <h2>Stap 2: Kies de gewenste planners</h2>
-                <input type="checkbox" onclick="alert('clicked')">FCFS</input><br>
-                <input type="checkbox" onclick="alert('clicked')">SPN</input><br>
-                <input type="checkbox" onclick="alert('clicked')">SRT</input><br>
-                <input type="checkbox" onclick="alert('clicked')">RR </input><br>
-                <input type="checkbox" onclick="alert('clicked')">RR </input><br>
-                <input type="checkbox" onclick="alert('clicked')">RR </input><br>
+                <input id="cb_FCFS" type="checkbox">FCFS</input><br>
+                <input id="cb_SPN" type="checkbox">SPN</input><br>
+                <input id="cb_SRT" type="checkbox">SRT</input><br>
+                <input id="cb_RR_one" type="checkbox">RR</input>, Q = <select id="sel_RR_one_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select><br>
+                <input id="cb_RR_two" type="checkbox">RR</input>, Q = <select id="sel_RR_two_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select><br><br>
+                <input id="cb_RR_three" type="checkbox">RR</input>, Q = <select id="sel_RR_three_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select><br><br>
                 <br>
                 <button onclick="runSchedulers();">Bereken planners</button>
             </div>

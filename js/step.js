@@ -40,48 +40,4 @@ class Step {
     getNumber(){
         return this.nr;
     }
-
-    processQueueToHTML(queue) {
-        let toHTML = "";
-        queue.forEach(function getProcess(process){
-            toHTML += process.getId() + ", ";
-        })
-        // if we added at least process, remove the last added ,
-        if (toHTML.length > 0){
-            toHTML = toHTML.substring(0, toHTML.length - 2);
-        }
-        return toHTML;
-    }
-
-    toHTML(){
-        let html_text = '&nbsp;&nbsp;&nbsp;&nbsp;Stap ' + this.nr + ":<br>" +
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Voor uitvoering: ' + "<br>" +
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wachtrij: ' + this.processQueueToHTML(this.queue_pre_execution) + "<br>" +
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wisselen? ';
-        if (this.reason_to_swap !== ReasonsToSwap.NONE) {
-            html_text + 'Ja';
-            html_text += " (" + this.reason_to_swap.toValue() + ")";
-        }else {
-            html_text + 'Nee';
-        }
-        html_text +=  "<br>"+
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Uitvoering: ' + "<br>" +
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Proces: ' + this.executed_process;
-        if(this.reason_chosen_process){
-            html_text += " (" + this.reason_chosen_process.toValue() + ")";
-        }
-        html_text +=  "<br>"+
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wachtrij: ' + this.processQueueToHTML(this.queue_execution) + "<br>" +
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Na uitvoering: ' + "<br>" +
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Toevoegen aan wachtrij? ' + this.need_to_add_queue;
-        if(this.need_to_add_queue) {
-            html_text += " (" + this.processes_to_add + ")";
-        }
-        html_text +=  "<br>"+
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wachtrij: ' + this.processQueueToHTML(this.queue_after_execution) + "<br>" +
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + "<br>" +
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Huidige oplossing: ' + this.total_scheduler + "<br>";
-
-        return html_text;
-    }
 }
