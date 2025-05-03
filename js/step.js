@@ -40,4 +40,20 @@ class Step {
     getNumber(){
         return this.nr;
     }
+
+    addedProcessesToQueue(){
+        return this.need_to_add_queue;
+    }
+
+    getAddedProcesses() {
+        return this.processes_to_add;
+    }
+
+    getReasonChoosenProcess() {
+        return this.reason_chosen_process
+    }
+
+    getReasonToSwap() {
+        return this.reason_to_swap;
+    }
 }

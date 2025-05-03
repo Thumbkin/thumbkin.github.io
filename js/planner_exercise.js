@@ -49,6 +49,10 @@ class PlannerExcersize {
         return this.schedulers;
     }
 
+    getNumberOfSchedulers(){
+        return this.schedulers.length;
+    }
+
     getTotalNumberOfSteps(){
         return this.schedulers[0].getTotalNumberOfSteps();
     }

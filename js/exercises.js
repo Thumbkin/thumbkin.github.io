@@ -1,14 +1,17 @@
-// Contains premade exercises for the schedulers
 // laad een vooraf genmaakte situatie zoals in de slides
-function laadStartSituatie(type) {
-    resetHuidigeSituatie();
+function laadStartSituatie() {
+    let type = document.getElementById("sel_oefeningen").value;
 
-    if(type === "Klas") { laadStartSituatieKlas() };
-    if(type === "GrootNaarKlein") { laadStartSituatieGrootNaarKlein() };
-    if(type === "KleinNaarGroot") { laadStartSituatieKleinNaarGroot() };
-    if(type === "LangeProcessen") { laadStartSituatieLangeProcessen() };
-    if(type === "KorteProcessen") { laadStartSituatieKorteProcessen() };
-    if(type === "AlleKleuren") { laadStartSituatieAlleKleuren() };
+    if (type !== 'geen'){
+        resetHuidigeSituatie();
+
+        if(type === "Klas") { laadStartSituatieKlas() };
+        if(type === "GrootNaarKlein") { laadStartSituatieGrootNaarKlein() };
+        if(type === "KleinNaarGroot") { laadStartSituatieKleinNaarGroot() };
+        if(type === "LangeProcessen") { laadStartSituatieLangeProcessen() };
+        if(type === "KorteProcessen") { laadStartSituatieKorteProcessen() };
+        if(type === "AlleKleuren") { laadStartSituatieAlleKleuren() };
+    }
 }
 
 function laadStartSituatieKlas() {

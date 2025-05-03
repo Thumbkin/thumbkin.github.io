@@ -15,6 +15,7 @@ function resetHuidigeSituatie() {
 }
 
 function runSchedulers () {
+    document.getElementById("resultaten_container").style.display = "none";
     // eerst controleren of we wel minstens een proces hebben
     if(PLANNER_EXCERSIZE.getStartingSituation().isValid()) {
         // chcken of we minsntes 1 planner hebben geselecteerd
@@ -37,12 +38,15 @@ function runSchedulers () {
         if(PLANNER_EXCERSIZE.hasAtLeastOnePlanner()) {
             PLANNER_EXCERSIZE.executeSchedulers();
 
-            document.getElementById("resultaten_planners").innerHTML = "";
+            document.getElementById("resultaten_stap");
             // change the value of the slider to total amountof steps and auto set it to last step
             document.getElementById("range_steps").max = PLANNER_EXCERSIZE.getTotalNumberOfSteps();
             document.getElementById("range_steps").value = PLANNER_EXCERSIZE.getTotalNumberOfSteps();
 
-            renderStep(undefined, PLANNER_EXCERSIZE.getTotalNumberOfSteps(), PLANNER_EXCERSIZE.getTotalNumberOfProcesses());
+            document.getElementById("resultaten_planners").innerHTML = "";
+            HTML_GENERATOR.renderStep(undefined, PLANNER_EXCERSIZE.getTotalNumberOfSteps(), PLANNER_EXCERSIZE.getTotalNumberOfProcesses());
+
+            document.getElementById("resultaten_container").style.display = "block";
         }
         else {
             alert("Er moet minstens 1 planner aangeduid worden!");
@@ -111,36 +115,6 @@ function addNewProcessRow (){
     document.getElementById("lijst_processen").innerHTML = new_inner_HTML
 }
 
-function renderStep(step_number, max_length_queue) {
-    if (step_number) {
-        let step = PLANNER_EXCERSIZE.getSchedulers()[0].getStep(step_number);
-        // fill in the pre exec, exec, post exec sections
-        document.getElementById("h_timestamp").innerHTML = "Tijdstip: " + step_number;
-        // show empty queues since we at last step
-        document.getElementById("queue_pre_exec").innerHTML = HTML_GENERATOR.generateQueue(step.getQueueBeforeExecution(), max_length_queue);
-        document.getElementById("queue_exec").innerHTML = HTML_GENERATOR.generateQueue(step.getQueueExecution(), max_length_queue);
-        document.getElementById("queue_post_exec").innerHTML = HTML_GENERATOR.generateQueue(step.getQueueAfterExecution(), max_length_queue);
-
-        document.getElementById("resultaten_planners").innerHTML = "<br>" + HTML_GENERATOR.getSchedulerSolutionsAsHTML(PLANNER_EXCERSIZE.getSchedulers(), step_number);
-    }
-    // final stap = full solution
-    else
-    {
-        // fill in the pre exec, exec, post exec sections
-        document.getElementById("h_timestamp").innerHTML = "Tijdstip: " + step_number;
-        // show empty queues since we at last step
-        let queue_html = HTML_GENERATOR.generateQueue([], max_length_queue);
-        document.getElementById("queue_pre_exec").innerHTML = queue_html;
-        document.getElementById("queue_exec").innerHTML = queue_html;
-        document.getElementById("queue_post_exec").innerHTML = queue_html;
-
-        document.getElementById("resultaten_planners").innerHTML = "<br>" + HTML_GENERATOR.getSchedulerSolutionsAsHTML(PLANNER_EXCERSIZE.getSchedulers());
-    }
-
-    document.getElementById("btn_prev_step").disabled = (step_number === 0);
-    document.getElementById("btn_next_step").disabled = (step_number === PLANNER_EXCERSIZE.getTotalNumberOfProcesses());
-}
-
 function loadPreviousStep() {
     loadStep(Number(document.getElementById("range_steps").value) - 1);
 }
@@ -155,9 +129,7 @@ function loadCurrentStep() {
 
 function loadStep(step_number){
     document.getElementById("range_steps").value = step_number;
-    // render the step
-    let max_length_queue = PLANNER_EXCERSIZE.getTotalNumberOfProcesses();
-    renderStep(step_number, max_length_queue);
+    HTML_GENERATOR.renderStep(step_number);
 }
 
 function animateRemainingSteps(){

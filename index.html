@@ -19,29 +19,33 @@
             <!-- per stap een container + beginsituatie -->
             <div id="stap_een" style="float: left">
                 <h2>Stap 1: Voeg processen en hun gegevens toe of laad vooraf gedefineerde case</h2>
-                <br>
-                <table id="lijst_processen">
-                    <tr>
-                        <th>Proces</th>
-                        <th>Start op</th>
-                        <th>Lengte</th>
-                        <!-- kolom met actiesymbool -->
-                        <th></th>
-                    </tr>
-                </table>
-                <br><br>
-                <button onclick="laadStartSituatie('Klas');">Laad oefening uit slides</button>
-                <br><br>
-                <button onclick="laadStartSituatie('KleinNaarGroot');">Laad oefening "Klein naar groot"</button>
-                <br><br>
-                <button onclick="laadStartSituatie('GrootNaarKlein');">Laad oefening "Groot naar klein"</button>
-                <br><br>
-                <button onclick="laadStartSituatie('LangeProcessen');">Laad oefening "Lange procesen"</button>
-                <br><br>
-                <button onclick="laadStartSituatie('KorteProcessen');">Laad oefening "Korte processen"</button>
-                <br><br>
-                <button onclick="laadStartSituatie('AlleKleuren');">Laad oefening "alle kleuren"</button>
-                <br>
+                <div>
+                    <table id="lijst_processen">
+                        <tr>
+                            <th>Proces</th>
+                            <th>Start op</th>
+                            <th>Lengte</th>
+                            <!-- kolom met actiesymbool -->
+                            <th></th>
+                        </tr>
+                    </table>
+                    <br><br>
+                    <p>
+                        Laad een oefening:
+                        <select id="sel_oefeningen" onchange="laadStartSituatie()">
+                            <option value="geen">-- Kies een oefening --</option>
+                            <option value="Klas">Slides</option>
+                            <option value="KleinNaarGroot">Klein naar groot</option>
+                            <option value="GrootNaarKlein">Groot naar klein</option>
+                            <option value="LangeProcessen">Lange procesen</option>
+                            <option value="KorteProcessen">Korte processen</option>
+                            <option value="AlleKleuren">Alle kleuren</option>
+                        </select>
+                    </p>
+                </div>
+                <div id="beginsituatie">
+
+                </div>
             </div>
             <div id="stap_twee" style="float: left">
                 <h2>Stap 2: Kies de gewenste planners</h2>
@@ -54,43 +58,148 @@
                 <br>
                 <button onclick="runSchedulers();">Bereken planners</button>
             </div>
-            <div id="beginsituatie">
-
-            </div>
         </div>
         <br>
-        <div id="resultaten_container" style="float:left;">
+        <div id="resultaten_container" style="float:left; display: none;">
             <H2>Resultaten</H2>
-            <div class="stepscontainer">
+            <div class="stepscontainer" id="resultaten_stap">
                 <div>
-                    <table>
+                    <!-- Structuur tabel:
+                                       | tijdstip: <getal>
+                                       |  knop < slider stappen knop > en knop play
+                                       | VOOR uitvoering        | TIJDENS uitvoering    | NA uitvoering
+                          naam planner | wachtrij   | xxxx      | Proces    | x (reden) | Toevoegen aan wachtrij? | x (welke )
+                                       | Wisselen?  | x (reden) | Wachtrij  | xxxxxx    | Wachtrij                | xxx
+                    -->
+                    <table border="1">
                         <tr>
-                            <td id="h_timestamp"></td>
                             <td></td>
+                            <td>Tijdstip:</td>
+                            <td id="td_timestamp"></td>
+                            <td colspan="4"></td>
                         </tr>
                         <tr>
-                            <td style="width: 250px;">Voor uitvoering:</td>
-                            <td>Wachtrij</td>
-                            <td id="queue_pre_exec">Wachtrij</td>
+                            <td></td>
+                            <td colspan="6">
+                                <button id="btn_prev_step" onclick="loadPreviousStep();">&lt;</button>
+                                <input type="range" min="0" max="100" id="range_steps" onclick="loadCurrentStep();">
+                                <button id="btn_next_step" onclick="loadNextStep();">&gt;</button>
+                                <button id="btn_play_steps" onclick="animateRemainingSteps();">Animate</button>
+                            </td>
                         </tr>
                         <tr>
-                            <td>Uitvoering:</td>
-                            <td>Wachtrij</td>
-                            <td id="queue_exec">Wachtrij</td>
+                            <td>Planner</td>
+                            <td colspan="2">VOOR uitvoering</td>
+                            <td colspan="2">Uitvoering</td>
+                            <td colspan="2">NA uitvoering</td>
                         </tr>
-                        <tr>
-                            <td>Na uitvoering:</td>
+                        <tr id="tr_info_FCFS_one">
+                            <td rowspan="2">FCFS</td>
                             <td>Wachtrij</td>
-                            <td id="queue_post_exec">Wachtrij</td>
+                            <td id="td_FCFS_queue_pre_exec">Wachtrij</td>
+                            <td>Proces:</td>
+                            <td id="td_FCFS_exec_proces"></td>
+                            <td>Toevoegen aan wachtrij?</td>
+                            <td id="td_FCFS_add_to_queue"></td>
+                        </tr>
+                        <tr id="tr_info_FCFS_two">
+                            <td>Wisselen?</td>
+                            <td id="td_FCFS_reason_swap"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_FCFS_queue_exec"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_FCFS_queue_post_exec"></td>
+                        </tr>
+                        <tr id="tr_info_SPN_one">
+                            <td rowspan="2">SPN</td>
+                            <td>Wachtrij</td>
+                            <td id="td_SPN_queue_pre_exec">Wachtrij</td>
+                            <td>Proces:</td>
+                            <td id="td_SPN_exec_proces"></td>
+                            <td>Toevoegen aan wachtrij?</td>
+                            <td id="td_SPN_add_to_queue"></td>
+                        </tr>
+                        <tr id="tr_info_SPN_two">
+                            <td>Wisselen?</td>
+                            <td id="td_SPN_reason_swap"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_SPN_queue_exec"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_SPN_queue_post_exec"></td>
+                        </tr>
+                        <tr id="tr_info_SRT_one">
+                            <td rowspan="2">SRT</td>
+                            <td>Wachtrij</td>
+                            <td id="td_SRT_queue_pre_exec">Wachtrij</td>
+                            <td>Proces:</td>
+                            <td id="td_SRT_exec_proces"></td>
+                            <td>Toevoegen aan wachtrij?</td>
+                            <td id="td_SRT_add_to_queue"></td>
+                        </tr>
+                        <tr id="tr_info_SRT_two">
+                            <td>Wisselen?</td>
+                            <td id="td_SRT_reason_swap"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_SRT_queue_exec"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_SRT_queue_post_exec"></td>
+                        </tr>
+                        <tr id="tr_info_RR_one_one">
+                            <td rowspan="2" id="td_RR_one_q">RR</td>
+                            <td>Wachtrij</td>
+                            <td id="td_RR_one_queue_pre_exec">Wachtrij</td>
+                            <td>Proces:</td>
+                            <td id="td_RR_one_exec_proces"></td>
+                            <td>Toevoegen aan wachtrij?</td>
+                            <td id="td_RR_one_add_to_queue"></td>
+                        </tr>
+                        <tr id="tr_info_RR_one_two">
+                            <td>Wisselen?</td>
+                            <td id="td_RR_one_reason_swap"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_RR_one_queue_exec"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_RR_one_queue_post_exec"></td>
+                        </tr>
+                        <tr id="tr_info_RR_two_one">
+                            <td rowspan="2" id="td_RR_two_q">RR</td>
+                            <td>Wachtrij</td>
+                            <td id="td_RR_two_queue_pre_exec">Wachtrij</td>
+                            <td>Proces:</td>
+                            <td id="td_RR_two_exec_proces"></td>
+                            <td>Toevoegen aan wachtrij?</td>
+                            <td id="td_RR_two_add_to_queue"></td>
+                        </tr>
+                        <tr id="tr_info_RR_two_two">
+                            <td>Wisselen?</td>
+                            <td id="td_RR_two_reason_swap"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_RR_two_queue_exec"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_RR_two_queue_post_exec"></td>
+                        </tr>
+                        <tr id="tr_info_RR_three_one">
+                            <td rowspan="2" id="td_RR_three_q">RR</td>
+                            <td>Wachtrij</td>
+                            <td id="td_RR_three_queue_pre_exec">Wachtrij</td>
+                            <td>Proces:</td>
+                            <td id="td_RR_three_exec_proces"></td>
+                            <td>Toevoegen aan wachtrij?</td>
+                            <td id="td_RR_three_add_to_queue"></td>
+                        </tr>
+                        <tr id="tr_info_RR_three_two">
+                            <td>Wisselen?</td>
+                            <td id="td_RR_three_reason_swap"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_RR_three_queue_exec"></td>
+                            <td>Wachtrij</td>
+                            <td id="td_RR_three_queue_post_exec"></td>
                         </tr>
                     </table>
                 </div>
-                <button id="btn_prev_step" onclick="loadPreviousStep();">&lt;</button>
-                <input type="range" min="0" max="100" id="range_steps" onclick="loadCurrentStep();">
-                <button id="btn_next_step" onclick="loadNextStep();">&gt;</button>
-                <button id="btn_play_steps" onclick="animateRemainingSteps();">Animate</button>
             </div>
             <div id="resultaten_planners">
+
             </div>
         </div>
     </body>

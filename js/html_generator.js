@@ -118,4 +118,65 @@ class HTML_GENERATOR {
 
         return inner_HTML;
     }
+
+    //renders one step of the solution
+    static renderStep(step_number) {
+        if (!step_number) {
+            step_number = PLANNER_EXCERSIZE.getSchedulers()[0].getTotalNumberOfSteps() - 1;
+        }
+        // fill in the top section of the info
+        document.getElementById("td_timestamp").innerHTML = step_number;
+        document.getElementById("btn_prev_step").disabled = (step_number === 0);
+        document.getElementById("btn_next_step").disabled = (step_number === PLANNER_EXCERSIZE.getTotalNumberOfProcesses());
+
+        let schedulers = PLANNER_EXCERSIZE.getSchedulers();
+        let max_length_queue = PLANNER_EXCERSIZE.getTotalNumberOfProcesses();
+
+        // array to keep track how many RR we rendered for ids one, two, three
+        let current_rr_ids = ["one", "two", "three"];
+
+        // hide all planner rows frist
+        let all_planner_types = ['FCFS', 'SRT', 'SPN', 'RR_one', 'RR_two', 'RR_three'];
+        for(let i = 0; i < all_planner_types.length; i++) {
+            document.getElementById("tr_info_" + all_planner_types[i] + "_one").style.display = "none";
+            document.getElementById("tr_info_" + all_planner_types[i] + "_two").style.display = "none";
+        }
+
+        // fill info for each planner
+        for(let i = 0; i < PLANNER_EXCERSIZE.getNumberOfSchedulers(); i++) {
+            let scheduler_type = schedulers[i].getType();
+            let step = schedulers[i].getStep(step_number);
+
+            // if we have RR, get the id for html elements from array
+            if(scheduler_type === "RR") {
+                scheduler_type = scheduler_type + "_" + current_rr_ids.shift();
+                document.getElementById("td_" + scheduler_type + "_q").innerHTML = "RR (Q = " + schedulers[i].getQvalue() + ")";
+            }
+
+            document.getElementById("td_" + scheduler_type + "_queue_pre_exec").innerHTML = HTML_GENERATOR.generateQueue(step.getQueueBeforeExecution(), max_length_queue);
+            if (step.getReasonToSwap() === REASONS_TO_SWAP.get('NONE')){
+                document.getElementById("td_" + scheduler_type + "_reason_swap").innerHTML = "Nee (";
+            }
+            else {
+                document.getElementById("td_" + scheduler_type + "_reason_swap").innerHTML = "Ja (";
+            }
+            document.getElementById("td_" + scheduler_type + "_reason_swap").innerHTML += step.getReasonToSwap() + ")";
+
+            document.getElementById("td_" + scheduler_type + "_queue_exec").innerHTML = HTML_GENERATOR.generateQueue(step.getQueueExecution(), max_length_queue);
+            document.getElementById("td_" + scheduler_type + "_exec_proces").innerHTML = step.getExecutedProcess() + " (" + step.getReasonChoosenProcess() + ")";
+
+            if(step.addedProcessesToQueue()){
+                document.getElementById("td_" + scheduler_type + "_add_to_queue").innerHTML = "Ja (" + STEP.getAddedProcesses() + ")";
+            }
+            else {
+                document.getElementById("td_" + scheduler_type + "_add_to_queue").innerHTML = "Nee";
+            }
+            document.getElementById("td_" + scheduler_type + "_queue_post_exec").innerHTML = HTML_GENERATOR.generateQueue(step.getQueueAfterExecution(), max_length_queue);
+            // show the tablerows again for the planner
+            document.getElementById("tr_info_" + scheduler_type + "_one").style.display = "";
+            document.getElementById("tr_info_" + scheduler_type + "_two").style.display = "";
+        }
+
+        document.getElementById("resultaten_planners").innerHTML = "<br>" + HTML_GENERATOR.getSchedulerSolutionsAsHTML(PLANNER_EXCERSIZE.getSchedulers(), step_number);
+    }
 }
