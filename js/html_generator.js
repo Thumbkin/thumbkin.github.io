@@ -1,14 +1,9 @@
 class HTML_GENERATOR {
     // Parses solution of multiple schedulers to html
     static getSchedulerSolutionsAsHTML(schedulers, step_number){
-        let number_of_steps = 1;
+        let number_of_steps = schedulers[0].getSolution().length - 1;
 
-
-        if(schedulers.length > 0) {
-            number_of_steps = schedulers[0].getSolution().length;
-        }
-
-        if (step_number === undefined){ step_number = number_of_steps}
+        if (step_number === undefined){ step_number = number_of_steps }
 
         let toHTML = '<table>';
         // repeat for each scheduler solution
@@ -94,10 +89,16 @@ class HTML_GENERATOR {
 
     // genereert html code voor een drop down voor start of lengte
     static generateDropDown (process_id, type) {
-        let inner_HTML = "<select id=\"dd_" + type + "_" + process_id + "\">";
+        let inner_HTML = '<select id="dd_' + type + '_' + process_id + '"';
         let i = 0;
         // if type = length, then start from 1
-        if (type === "length") i = 1;
+        if (type === "length") {
+            i = 1;
+            inner_HTML += 'onchange="updateProcessLength(' + "'" + process_id + "'" + ');">';
+        }
+        else {
+            inner_HTML += 'onchange="updateProcessStart(' + "'" + process_id + "'" + ');">';
+        }
         // add numbers 0 to 50 as possible values
         for (i; i <= 50; i++) {
             inner_HTML += "<option value=\"" + i + "\">" + i + "</option>";
@@ -121,13 +122,18 @@ class HTML_GENERATOR {
 
     //renders one step of the solution
     static renderStep(step_number) {
-        if (!step_number) {
-            step_number = PLANNER_EXCERSIZE.getSchedulers()[0].getTotalNumberOfSteps() - 1;
-        }
         // fill in the top section of the info
         document.getElementById("td_timestamp").innerHTML = step_number;
+        document.getElementById("btn_first_step").disabled = (step_number === 0);
         document.getElementById("btn_prev_step").disabled = (step_number === 0);
-        document.getElementById("btn_next_step").disabled = (step_number === PLANNER_EXCERSIZE.getTotalNumberOfProcesses());
+        document.getElementById("btn_next_step").disabled = (step_number === (PLANNER_EXCERSIZE.getSchedulers()[0].getTotalNumberOfSteps() - 1));
+        document.getElementById("btn_last_step").disabled = (step_number === (PLANNER_EXCERSIZE.getSchedulers()[0].getTotalNumberOfSteps() - 1));
+        document.getElementById("inp_range_steps").value = step_number;
+
+        // it is last step, stop the animator
+        if(step_number === (PLANNER_EXCERSIZE.getSchedulers()[0].getTotalNumberOfSteps() - 1)){
+            ANIMATOR.stop();
+        }
 
         let schedulers = PLANNER_EXCERSIZE.getSchedulers();
         let max_length_queue = PLANNER_EXCERSIZE.getTotalNumberOfProcesses();
@@ -166,7 +172,7 @@ class HTML_GENERATOR {
             document.getElementById("td_" + scheduler_type + "_exec_proces").innerHTML = step.getExecutedProcess() + " (" + step.getReasonChoosenProcess() + ")";
 
             if(step.addedProcessesToQueue()){
-                document.getElementById("td_" + scheduler_type + "_add_to_queue").innerHTML = "Ja (" + STEP.getAddedProcesses() + ")";
+                document.getElementById("td_" + scheduler_type + "_add_to_queue").innerHTML = "Ja (" + step.getAddedProcesses() + ")";
             }
             else {
                 document.getElementById("td_" + scheduler_type + "_add_to_queue").innerHTML = "Nee";

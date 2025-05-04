@@ -8,8 +8,9 @@
         <script type="text/javascript" src='./js/starting_situation.js'> </script>
         <script type="text/javascript" src='./js/step.js'> </script>
         <script type="text/javascript" src='./js/scheduler.js'> </script>
-        <script type="text/javascript" src='js/planner_exercise.js'> </script>
+        <script type="text/javascript" src='./js/planner_exercise.js'> </script>
         <script type="text/javascript" src='./js/html_generator.js'> </script>
+        <script type="text/javascript" src='./js/animator.js'> </script>
         <script type="text/javascript" src='./js/main.js'> </script>
         <script type="text/javascript" src='./js/exercises.js'> </script>
         <link rel="stylesheet" href='./css/styling.css'>
@@ -71,30 +72,33 @@
                           naam planner | wachtrij   | xxxx      | Proces    | x (reden) | Toevoegen aan wachtrij? | x (welke )
                                        | Wisselen?  | x (reden) | Wachtrij  | xxxxxx    | Wachtrij                | xxx
                     -->
-                    <table border="1">
+                    <table border="1" class="table_info">
                         <tr>
                             <td></td>
-                            <td>Tijdstip:</td>
-                            <td id="td_timestamp"></td>
+                            <td class="td_info_timestamp">Tijdstip:</td>
+                            <td class="td_info_timestamp" id="td_timestamp"></td>
                             <td colspan="4"></td>
                         </tr>
                         <tr>
                             <td></td>
                             <td colspan="6">
+                                <button id="btn_first_step" onclick="loadFirstStep();">&lt;&lt;</button>
                                 <button id="btn_prev_step" onclick="loadPreviousStep();">&lt;</button>
-                                <input type="range" min="0" max="100" id="range_steps" onclick="loadCurrentStep();">
+                                <input type="range" min="0" max="100" id="inp_range_steps" onclick="loadCurrentStep();">
                                 <button id="btn_next_step" onclick="loadNextStep();">&gt;</button>
-                                <button id="btn_play_steps" onclick="animateRemainingSteps();">Animate</button>
+                                <button id="btn_last_step" onclick="loadLastStep();">&gt;&gt;</button>
+                                <button id="btn_play_steps_run" onclick="ANIMATOR.play();">|&gt;</button>
+                                <button id="btn_play_steps_pause" onclick="ANIMATOR.pause();">||</button>
                             </td>
                         </tr>
                         <tr>
-                            <td>Planner</td>
-                            <td colspan="2">VOOR uitvoering</td>
-                            <td colspan="2">Uitvoering</td>
-                            <td colspan="2">NA uitvoering</td>
+                            <td class="td_info_header">Planner</td>
+                            <td class="td_info_header" colspan="2">VOOR uitvoering</td>
+                            <td class="td_info_header" colspan="2">Uitvoering</td>
+                            <td class="td_info_header" colspan="2">NA uitvoering</td>
                         </tr>
                         <tr id="tr_info_FCFS_one">
-                            <td rowspan="2">FCFS</td>
+                            <td class="td_info_planner" rowspan="2">FCFS</td>
                             <td>Wachtrij</td>
                             <td id="td_FCFS_queue_pre_exec">Wachtrij</td>
                             <td>Proces:</td>
@@ -102,7 +106,7 @@
                             <td>Toevoegen aan wachtrij?</td>
                             <td id="td_FCFS_add_to_queue"></td>
                         </tr>
-                        <tr id="tr_info_FCFS_two">
+                        <tr id="tr_info_FCFS_two" class="bottom_row_info">
                             <td>Wisselen?</td>
                             <td id="td_FCFS_reason_swap"></td>
                             <td>Wachtrij</td>
@@ -111,7 +115,7 @@
                             <td id="td_FCFS_queue_post_exec"></td>
                         </tr>
                         <tr id="tr_info_SPN_one">
-                            <td rowspan="2">SPN</td>
+                            <td class="td_info_planner" rowspan="2">SPN</td>
                             <td>Wachtrij</td>
                             <td id="td_SPN_queue_pre_exec">Wachtrij</td>
                             <td>Proces:</td>
@@ -128,7 +132,7 @@
                             <td id="td_SPN_queue_post_exec"></td>
                         </tr>
                         <tr id="tr_info_SRT_one">
-                            <td rowspan="2">SRT</td>
+                            <td class="td_info_planner" rowspan="2">SRT</td>
                             <td>Wachtrij</td>
                             <td id="td_SRT_queue_pre_exec">Wachtrij</td>
                             <td>Proces:</td>
@@ -145,7 +149,7 @@
                             <td id="td_SRT_queue_post_exec"></td>
                         </tr>
                         <tr id="tr_info_RR_one_one">
-                            <td rowspan="2" id="td_RR_one_q">RR</td>
+                            <td class="td_info_planner" rowspan="2" id="td_RR_one_q">RR</td>
                             <td>Wachtrij</td>
                             <td id="td_RR_one_queue_pre_exec">Wachtrij</td>
                             <td>Proces:</td>
@@ -162,7 +166,7 @@
                             <td id="td_RR_one_queue_post_exec"></td>
                         </tr>
                         <tr id="tr_info_RR_two_one">
-                            <td rowspan="2" id="td_RR_two_q">RR</td>
+                            <td class="td_info_planner" rowspan="2" id="td_RR_two_q">RR</td>
                             <td>Wachtrij</td>
                             <td id="td_RR_two_queue_pre_exec">Wachtrij</td>
                             <td>Proces:</td>
@@ -179,7 +183,7 @@
                             <td id="td_RR_two_queue_post_exec"></td>
                         </tr>
                         <tr id="tr_info_RR_three_one">
-                            <td rowspan="2" id="td_RR_three_q">RR</td>
+                            <td class="td_info_planner" rowspan="2" id="td_RR_three_q">RR</td>
                             <td>Wachtrij</td>
                             <td id="td_RR_three_queue_pre_exec">Wachtrij</td>
                             <td>Proces:</td>

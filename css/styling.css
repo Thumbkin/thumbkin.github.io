@@ -6,10 +6,11 @@ table {
 
 td {
     height: 20px;
-    width: 30px;
-    min-width: 30px;
-    text-align: right;
+    width: 25px;
+    min-width: 25px;
     white-space: nowrap;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 td.scheduler_vertical {
@@ -24,10 +25,12 @@ td.scheduler_step {
 
 td.scheduler_vertical_no_border {
     width: 100px;
+    text-align: right;
 }
 
 td.scheduler_time {
     border-top: 3px solid black;
+    text-align: right;
 }
 
 td.starting_vertical_top {
@@ -46,4 +49,28 @@ td.starting_vertical_process {
 td.step_one_process {
     border: 1px solid black;
     text-align: center;
+}
+
+table.table_info.td {
+    padding: 5px;
+    text-align: Left;
+}
+
+td.td_info_planner{
+    text-align: right;
+    height: 75px;
+}
+
+td.td_info_timestamp {
+    text-align: left;
+    font-weight: bold;
+}
+
+td.td_info_header {
+    text-align: center;
+    font-weight: bold;
+}
+
+tr.bottom_row_info {
+    border-top: none !important;
 }

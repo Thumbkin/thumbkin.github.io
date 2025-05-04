@@ -1,4 +1,5 @@
 const PLANNER_EXCERSIZE = new PlannerExcersize();
+const ANIMATOR = new Animator(0);
 
 function resetHuidigeSituatie() {
     PLANNER_EXCERSIZE.resetStartingSituation();
@@ -40,11 +41,14 @@ function runSchedulers () {
 
             document.getElementById("resultaten_stap");
             // change the value of the slider to total amountof steps and auto set it to last step
-            document.getElementById("range_steps").max = PLANNER_EXCERSIZE.getTotalNumberOfSteps();
-            document.getElementById("range_steps").value = PLANNER_EXCERSIZE.getTotalNumberOfSteps();
+            document.getElementById("inp_range_steps").max = PLANNER_EXCERSIZE.getTotalNumberOfSteps() - 1;
+            document.getElementById("inp_range_steps").value = PLANNER_EXCERSIZE.getTotalNumberOfSteps() - 1;
+
+            ANIMATOR.setMaxSteps(PLANNER_EXCERSIZE.getTotalNumberOfSteps());
 
             document.getElementById("resultaten_planners").innerHTML = "";
-            HTML_GENERATOR.renderStep(undefined, PLANNER_EXCERSIZE.getTotalNumberOfSteps(), PLANNER_EXCERSIZE.getTotalNumberOfProcesses());
+            // render the final step
+            HTML_GENERATOR.renderStep(PLANNER_EXCERSIZE.getTotalNumberOfSteps() - 1);
 
             document.getElementById("resultaten_container").style.display = "block";
         }
@@ -58,33 +62,39 @@ function runSchedulers () {
 }
 
 function updateProcessStart(process_id){
-    let start = document.getElementById("dd_start_" + process_id).value;
+    let start = Number(document.getElementById("dd_start_" + process_id).value);
     PLANNER_EXCERSIZE.updateStartTimeProcess(process_id, start);
+
+    // render de nieuwe startsituatie
+    document.getElementById("beginsituatie").innerHTML = HTML_GENERATOR.getStartingSituationAsHTML(PLANNER_EXCERSIZE.getStartingSituation());
 }
 
 function updateProcessLength(process_id){
-    let length = document.getElementById("dd_length_" + process_id).value;
+    let length = Number(document.getElementById("dd_length_" + process_id).value);
     PLANNER_EXCERSIZE.updateLengthProcess(process_id, length);
+
+    // render de nieuwe startsituatie
+    document.getElementById("beginsituatie").innerHTML = HTML_GENERATOR.getStartingSituationAsHTML(PLANNER_EXCERSIZE.getStartingSituation());
 }
 
 function addProcess(process_id) {
     // get the values from the drop downs
-    let start = document.getElementById("dd_start_" + process_id).value;
-    let length = document.getElementById("dd_length_" + process_id).value;
+    let start = Number(document.getElementById("dd_start_" + process_id).value);
+    let length = Number(document.getElementById("dd_length_" + process_id).value);
     PLANNER_EXCERSIZE.addProcess(process_id, start, length);
-    // add on change event now cause process is added to solution, but it can be changed with DDs
-
-    document.getElementById("dd_start_" + process_id).onchange = "updateProcessStart(" + process_id + ")";
-    document.getElementById("dd_length_" + process_id).onchange = "updateProcessLength(" + process_id + ")";
 
         // change the icon in the table to edit instead of add
     document.getElementById("btns_" + process_id).innerHTML = "<button onclick=\"removeProcess('" + process_id + "');\">Remove</buton>";
 
+    start = Number(document.getElementById("dd_start_" + process_id).value);
+    length = Number(document.getElementById("dd_length_" + process_id).value);
     // if we have an unused color left, add a new row to add
     if(PLANNER_EXCERSIZE.getTotalNumberOfProcesses() < PROCESS_IDS.length){
         addNewProcessRow();
     }
 
+    start = Number(document.getElementById("dd_start_" + process_id).value);
+    length = Number(document.getElementById("dd_length_" + process_id).value);
     // render de nieuwe startsituatie
     document.getElementById("beginsituatie").innerHTML = HTML_GENERATOR.getStartingSituationAsHTML(PLANNER_EXCERSIZE.getStartingSituation());
 }
@@ -105,35 +115,40 @@ function removeProcess(process_id) {
 function addNewProcessRow (){
     let process_id = PLANNER_EXCERSIZE.getNextUnusedProcessId();
 
-    let new_inner_HTML = document.getElementById("lijst_processen").innerHTML
-    new_inner_HTML += "<tr id=\"table_row_"+ process_id + "\">";
-    new_inner_HTML += "<td class='step_one_process' style='background-color: " + PROCESS_COLORS.get(process_id) +"'>" + process_id + "</td>";
+    let tr_element = document.createElement("tr");
+    tr_element.id = "table_row_"+ process_id;
+
+    let new_inner_HTML = "<td class='step_one_process' style='background-color: " + PROCESS_COLORS.get(process_id) +"'>" + process_id + "</td>";
     new_inner_HTML += "<td>" + HTML_GENERATOR.generateDropDown(process_id, "start") + "</td>";
     new_inner_HTML += "<td>" + HTML_GENERATOR.generateDropDown(process_id, "length") + "</td>";
     new_inner_HTML += "<td id=\"btns_" + process_id + "\" ><button onclick=\"addProcess('" + process_id + "');\">Add</buton></td>";
-    new_inner_HTML += "</tr>";
-    document.getElementById("lijst_processen").innerHTML = new_inner_HTML
+    tr_element.innerHTML = new_inner_HTML;
+
+    document.getElementById("lijst_processen").appendChild(tr_element);
+}
+
+function loadFirstStep() {
+    loadStep(0);
 }
 
 function loadPreviousStep() {
-    loadStep(Number(document.getElementById("range_steps").value) - 1);
+    loadStep(Number(document.getElementById("inp_range_steps").value) - 1);
 }
 
 function loadNextStep() {
-    loadStep(Number(document.getElementById("range_steps").value) + 1);
+    loadStep(Number(document.getElementById("inp_range_steps").value) + 1);
+}
+
+function loadLastStep() {
+    loadStep(Number(document.getElementById("inp_range_steps").max));
 }
 
 function loadCurrentStep() {
-    loadStep(Number(document.getElementById("range_steps").value));
+    loadStep(Number(document.getElementById("inp_range_steps").value));
 }
 
 function loadStep(step_number){
-    document.getElementById("range_steps").value = step_number;
+    // stop animitor if running
+    if(ANIMATOR.isRunning()) { ANIMATOR.stop(); }
     HTML_GENERATOR.renderStep(step_number);
-}
-
-function animateRemainingSteps(){
-    let currentStep = 0;
-
-    alert('Nog niet beschikbaar');
 }

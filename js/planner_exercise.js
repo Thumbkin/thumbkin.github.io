@@ -19,7 +19,7 @@ class PlannerExcersize {
         this.starting_situation.updateStartTimeProcess(process_id, start);
     }
 
-    updateLengthProcess(processID, length){
+    updateLengthProcess(process_id, length){
         this.starting_situation.updateLengthProcess(process_id, length);
     }
 

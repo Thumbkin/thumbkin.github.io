@@ -108,8 +108,8 @@ function laadStartSituatieAlleKleuren() {
 
 // voegt een preoces toe aan de startsituatie
 function voegStartProcesToe(process_id, start, length){
-    document.getElementById("dd_start_" + process_id).value = start;
-    document.getElementById("dd_length_" + process_id).value = length;
+    document.getElementById("dd_start_" + process_id).value = String(start);
+    document.getElementById("dd_length_" + process_id).value = String(length);
 
     addProcess(process_id);
 }
