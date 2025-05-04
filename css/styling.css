@@ -74,3 +74,9 @@ td.td_info_header {
 tr.bottom_row_info {
     border-top: none !important;
 }
+
+input.inp_animator {
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+}
