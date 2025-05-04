@@ -5,7 +5,7 @@ function laadStartSituatie() {
     if (type !== 'geen'){
         resetHuidigeSituatie();
 
-        if(type === "Klas") { laadStartSituatieKlas() };
+        if(type === "Slides") { laadStartSituatieSlides() };
         if(type === "GrootNaarKlein") { laadStartSituatieGrootNaarKlein() };
         if(type === "KleinNaarGroot") { laadStartSituatieKleinNaarGroot() };
         if(type === "LangeProcessen") { laadStartSituatieLangeProcessen() };
@@ -14,7 +14,7 @@ function laadStartSituatie() {
     }
 }
 
-function laadStartSituatieKlas() {
+function laadStartSituatieSlides() {
     voegStartProcesToe("A", 0, 7);
     voegStartProcesToe("B", 1, 4);
     voegStartProcesToe("C", 2, 2);
@@ -22,7 +22,7 @@ function laadStartSituatieKlas() {
     voegStartProcesToe("E", 4, 1);
     voegStartProcesToe("F", 5, 6);
     voegStartProcesToe("G", 7, 3);
-    voegStartProcesToe("H", 20, 2);
+    voegStartProcesToe("H", 12, 2);
 
     selecteerAllePlanners([3, 4, 5]);
 }

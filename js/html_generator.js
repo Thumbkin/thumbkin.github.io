@@ -1,7 +1,7 @@
 class HTML_GENERATOR {
     // Parses solution of multiple schedulers to html
     static getSchedulerSolutionsAsHTML(schedulers, step_number){
-        let number_of_steps = schedulers[0].getSolution().length - 1;
+        let number_of_steps = schedulers[0].getSolution().length;
 
         if (step_number === undefined){ step_number = number_of_steps }
 
@@ -9,7 +9,7 @@ class HTML_GENERATOR {
         // repeat for each scheduler solution
         for(let s = 0; s < schedulers.length; s++){
             // first row is empty
-            toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + (number_of_steps + 1)+ '"></td></tr>';
+            toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + (number_of_steps + 1) + '"></td></tr>';
             // second row: name scheduler | each step from solution
             if (schedulers[s].getType() === SCHEDULER_TYPES.get('RR')){
                 toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType() + ' (Q = ' + schedulers[s].getQvalue() + ')</td>';
@@ -17,13 +17,13 @@ class HTML_GENERATOR {
             else {
                 toHTML += '<tr><td class="scheduler_vertical">' + schedulers[s].getType() + '</td>';
             }
-            for (let i = 0; i < step_number; i++) {
+            for (let i = 0; i <= step_number; i++) {
                 toHTML += '<td class="scheduler_step" style="background-color: '+ PROCESS_COLORS.get(schedulers[s].getSolution()[i]) + '">' + schedulers[s].getSolution()[i] + '</td>';
             }
             toHTML += '<tr>';
         }
         // filler row: empty
-        toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + number_of_steps + '"></td></tr>';
+        toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + (number_of_steps + 1) + '"></td></tr>';
         // last row: time units
         toHTML += '<tr><td class="scheduler_vertical_no_border">0</td>';
         for (let i = 1; i <= number_of_steps + 1; i++) {

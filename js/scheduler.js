@@ -10,7 +10,6 @@ class Scheduler {
     processes = [];
     current_process;
     last_process;
-    readd_last_process;
 
     reason_to_swap = REASONS_TO_SWAP.get('NONE');
     reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('NONE');
@@ -61,57 +60,13 @@ class Scheduler {
         // sort process based on start point
         this.processes.sort(this.#sortProcessesByStartingTime);
         // loop each process and add its length as steps
-        for(let i=0; i < this.processes.length; i++){
+        for(let i= 0; i < this.processes.length; i++){
             // if start point is in future (in other words there will be empty execution steps)
             // calculate forward
             if (this.processes[i].getStart() > this.total_steps) {
                 this.total_steps = this.processes[i].getStart();
             }
             this.total_steps += this.processes[i].getLength();
-        }
-    }
-
-    determineIfSwapIsNeeded() {
-        // Check if last executed process was finished, if so then swap
-        this.reason_to_swap = REASONS_TO_SWAP.get('NONE');
-
-        // each planner needs to swap if no process is running or last running process is finished
-        if (this.last_process == null || this.last_process.isFinished() === true) {
-            this.reason_to_swap = REASONS_TO_SWAP.get('FINISHED');
-        }
-        // SRT also swaps if there is a better/shorter process in the queue
-        // check if first process in queue is better (since they are sorted short -> long)
-        if(this.reason_to_swap === REASONS_TO_SWAP.get('NONE') &&
-            this.type === SCHEDULER_TYPES.get('SRT') && 
-            this.queue_pre_execution.length > 0 && 
-            this.queue_pre_execution[0].getRemaining() < this.last_process.getRemaining()){
-            this.reason_to_swap = REASONS_TO_SWAP.get('SHORTER_PROCESS');
-        }
-        // RR also swaps if Q value is reached
-        if(this.reason_to_swap === REASONS_TO_SWAP.get('NONE') && 
-            this.type === SCHEDULER_TYPES.get('RR') && this.current_q_step === this.round_q_value){
-            this.reason_to_swap = REASONS_TO_SWAP.get('Q_VALUE_REACHED');
-        }
-    }
-
-    // swaps the current running process with the first from the queue
-    swapProcess() {
-        // check if there is a process left we can take
-        if (this.queue_execution.length > 0) {
-            // since the queue is sorted for the type of scheduler, we always take first item present if available
-            this.current_process = this.queue_execution.shift();
-            // determine the reason on which we based our decision
-            if (this.type === SCHEDULER_TYPES.get('SRT')) { this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('SHORTEST_TIME_LEFT_IN_QUEUE'); }
-            else if (this.type === SCHEDULER_TYPES.get('SPN')) { this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('SHORTEST_IN_QUEUE'); }
-            else { this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('FIRST_IN_QUEUE'); }
-        }
-        else {
-            this.current_process = null;
-            this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('NO_PROCESS_AVAILABLE');
-        }
-
-        if (this.type === SCHEDULER_TYPES.get('SRT') && this.last_process && this.last_process.isFinished() === false) {
-            this.queue_execution.push(this.last_process);
         }
     }
 
@@ -163,6 +118,52 @@ class Scheduler {
         else {
             this.current_process = this.last_process;
             this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('NONE');
+        }
+    }
+
+    determineIfSwapIsNeeded() {
+        // Check if last executed process was finished, if so then swap
+        this.reason_to_swap = REASONS_TO_SWAP.get('NONE');
+
+        // each planner needs to swap if no process is running or last running process is finished
+        if (this.last_process == null || this.last_process.isFinished() === true) {
+            this.reason_to_swap = REASONS_TO_SWAP.get('FINISHED');
+        }
+        // SRT also swaps if there is a better/shorter process in the queue
+        // check if first process in queue is better (since they are sorted short -> long)
+        if(this.reason_to_swap === REASONS_TO_SWAP.get('NONE') &&
+            this.type === SCHEDULER_TYPES.get('SRT') && 
+            this.queue_pre_execution.length > 0 && 
+            this.queue_pre_execution[0].getRemaining() < this.last_process.getRemaining()){
+            this.reason_to_swap = REASONS_TO_SWAP.get('SHORTER_PROCESS');
+        }
+        // RR also swaps if Q value is reached
+        if(this.reason_to_swap === REASONS_TO_SWAP.get('NONE') && 
+            this.type === SCHEDULER_TYPES.get('RR') && this.current_q_step === this.round_q_value){
+            this.reason_to_swap = REASONS_TO_SWAP.get('Q_VALUE_REACHED');
+        }
+    }
+
+    // swaps the current running process with the first from the queue
+    swapProcess() {
+        // check if there is a process left we can take
+        if (this.queue_execution.length > 0) {
+            // since the queue is sorted for the type of scheduler, we always take first item present if available
+            this.current_process = this.queue_execution.shift();
+            // determine the reason on which we based our decision
+            if (this.type === SCHEDULER_TYPES.get('SRT')) { this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('SHORTEST_TIME_LEFT_IN_QUEUE'); }
+            else if (this.type === SCHEDULER_TYPES.get('SPN')) { this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('SHORTEST_IN_QUEUE'); }
+            else { this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('FIRST_IN_QUEUE'); }
+        }
+        else {
+            this.current_process = null;
+            this.reasons_choice_next_process = REASONS_CHOICE_NEXT_PROCESS.get('NO_PROCESS_AVAILABLE');
+        }
+
+        if (this.type === SCHEDULER_TYPES.get('SRT') && this.last_process && this.last_process.isFinished() === false) {
+            this.queue_execution.push(this.last_process);
+            // reset the queue
+            this.queue_execution.sort(this.#sortProcessesByRemainingTime);
         }
     }
 
