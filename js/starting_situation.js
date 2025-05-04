@@ -42,17 +42,19 @@ class StartingSituation {
             }
         });
         // sort processes by id
-        clonedProcesses.sort(function(a, b) {
-            if (a.getId() < b.getId()) {
-                return -1;
-            }
-            if (a.getId() > b.getId()) {
-                return 1;
-            }
-            return 0;
-        });
+        clonedProcesses.sort(this.#sortProcessesById);
         // return a clone of the processes
         return clonedProcesses;
+    }
+
+    #sortProcessesById(a, b) {
+        if (a.getId() < b.getId()) {
+            return -1;
+        }
+        if (a.getId() > b.getId()) {
+            return 1;
+        }
+        return 0;
     }
 
     // Checks if we have at least one process with execution time

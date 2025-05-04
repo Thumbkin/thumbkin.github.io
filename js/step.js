@@ -1,6 +1,6 @@
 class Step {
     constructor(nr, queue_pre_execution, reason_to_swap, executed_process, reason_chosen_process, queue_execution,
-                need_to_add_queue, processes_to_add, queue_after_execution, total_scheduler) {
+                processes_to_add, queue_after_execution, total_scheduler) {
         this.nr = nr;
 
         this.queue_pre_execution = queue_pre_execution;
@@ -10,8 +10,8 @@ class Step {
         this.reason_chosen_process = reason_chosen_process;
         this.queue_execution = queue_execution;
 
-        this.need_to_add_queue = need_to_add_queue;
         this.processes_to_add = processes_to_add;
+        this.need_to_add_queue = (this.processes_to_add.length > 0);
         this.queue_after_execution = queue_after_execution;
 
         this.total_scheduler = total_scheduler;
