@@ -16,47 +16,46 @@
         <link rel="stylesheet" href='./css/styling.css'>
     </head>
     <body onload="addNewProcessRow();">
-        <div id="beginsituatie_container" style="width: 100%">
+        <div id="beginsituatie_container" style="width: 100%; display: block;">
             <!-- per stap een container + beginsituatie -->
-            <div id="stap_een" style="float: left">
-                <h2>Stap 1: Voeg processen en hun gegevens toe of laad vooraf gedefineerde case</h2>
-                <div>
-                    <table id="lijst_processen">
-                        <tr>
-                            <th>Proces</th>
-                            <th>Start op</th>
-                            <th>Lengte</th>
-                            <!-- kolom met actiesymbool -->
-                            <th></th>
-                        </tr>
-                    </table>
-                    <br><br>
-                    <p>
-                        Laad een oefening:
-                        <select id="sel_oefeningen" onchange="laadStartSituatie()">
-                            <option value="geen">-- Kies een oefening --</option>
-                            <option value="Slides">Slides</option>
-                            <option value="KleinNaarGroot">Klein naar groot</option>
-                            <option value="GrootNaarKlein">Groot naar klein</option>
-                            <option value="LangeProcessen">Lange procesen</option>
-                            <option value="KorteProcessen">Korte processen</option>
-                            <option value="AlleKleuren">Alle kleuren</option>
-                        </select>
-                    </p>
-                </div>
-                <div id="beginsituatie">
-
-                </div>
+            <H2>Beginsituatie</H2>
+            <div id="stap_een" style="width: 30%">
+                <table id="lijst_processen" style="text-wrap: nowrap; padding: 5px;">
+                    <tr>
+                        <th>Proces</th>
+                        <th style="text-wrap: nowrap">Start op</th>
+                        <th>Lengte</th>
+                        <!-- kolom met actiesymbool -->
+                        <th></th>
+                    </tr>
+                </table>
+                <br><br>
+                <p>
+                    OF laad een oefening:
+                    <select id="sel_oefeningen" onchange="laadStartSituatie()">
+                        <option value="geen">-- Kies een oefening --</option>
+                        <option value="Slides">Slides</option>
+                        <option value="KleinNaarGroot">Klein naar groot</option>
+                        <option value="GrootNaarKlein">Groot naar klein</option>
+                        <option value="LangeProcessen">Lange procesen</option>
+                        <option value="KorteProcessen">Korte processen</option>
+                        <option value="AlleKleuren">Alle kleuren</option>
+                    </select>
+                </p>
             </div>
-            <div id="stap_twee" style="float: left">
-                <h2>Stap 2: Kies de gewenste planners</h2>
-                <input id="cb_FCFS" type="checkbox">FCFS</input><br>
-                <input id="cb_SPN" type="checkbox">SPN</input><br>
-                <input id="cb_SRT" type="checkbox">SRT</input><br>
-                <input id="cb_RR_one" type="checkbox">RR</input>, Q = <select id="sel_RR_one_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select><br>
-                <input id="cb_RR_two" type="checkbox">RR</input>, Q = <select id="sel_RR_two_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select><br><br>
-                <input id="cb_RR_three" type="checkbox">RR</input>, Q = <select id="sel_RR_three_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select><br><br>
-                <br>
+            <div id="beginsituatie" style="width: 55%">
+
+            </div>
+            <div id="stap_twee" style="width: 10%">
+                <H2>Planners</H2>
+                <ul style="list-style-type: none; width: 100%; padding-inline-start: 0px">
+                    <li><input id="cb_FCFS" type="checkbox">FCFS</input></li>
+                    <li><input id="cb_SPN" type="checkbox">SPN</input></li>
+                    <li><input id="cb_SRT" type="checkbox">SRT</input></li>
+                    <li><input id="cb_RR_one" type="checkbox">RR</input>, Q = <select id="sel_RR_one_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
+                    <li><input id="cb_RR_two" type="checkbox">RR</input>, Q = <select id="sel_RR_two_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
+                    <li><input id="cb_RR_three" type="checkbox">RR</input>, Q = <select id="sel_RR_three_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
+                </ul>
                 <button onclick="runSchedulers();">Bereken planners</button>
             </div>
         </div>
@@ -107,7 +106,7 @@
                             <td id="td_FCFS_add_to_queue"></td>
                         </tr>
                         <tr id="tr_info_FCFS_two" class="bottom_row_info">
-                            <td>Wisselen?</td>
+                            <td>xisselen?</td>
                             <td id="td_FCFS_reason_swap"></td>
                             <td>Wachtrij</td>
                             <td id="td_FCFS_queue_exec"></td>

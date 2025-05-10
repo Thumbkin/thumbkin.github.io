@@ -89,7 +89,7 @@ class HTML_GENERATOR {
 
     // genereert html code voor een drop down voor start of lengte
     static generateDropDown (process_id, type) {
-        let inner_HTML = '<select id="dd_' + type + '_' + process_id + '"';
+        let inner_HTML = '<select id="dd_' + type + '_' + process_id + '" class="inp_process" ';
         let i = 0;
         // if type = length, then start from 1
         if (type === "length") {

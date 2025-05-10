@@ -84,7 +84,7 @@ function addProcess(process_id) {
     PLANNER_EXCERSIZE.addProcess(process_id, start, length);
 
         // change the icon in the table to edit instead of add
-    document.getElementById("btns_" + process_id).innerHTML = "<button onclick=\"removeProcess('" + process_id + "');\">Remove</buton>";
+    document.getElementById("btns_" + process_id).innerHTML = "<button class='inp_process' onclick=\"removeProcess('" + process_id + "');\">Remove</buton>";
 
     start = Number(document.getElementById("dd_start_" + process_id).value);
     length = Number(document.getElementById("dd_length_" + process_id).value);

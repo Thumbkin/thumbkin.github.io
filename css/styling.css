@@ -80,3 +80,14 @@ input.inp_animator {
     height: 25px;
     vertical-align: middle;
 }
+
+.inp_process {
+    height: 35px;
+    width: 50px;
+    min-width: 50px;
+    white-space: nowrap;
+}
+
+div {
+   float: left;
+}
