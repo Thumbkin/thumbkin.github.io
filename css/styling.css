@@ -88,6 +88,8 @@ input.inp_animator {
     white-space: nowrap;
 }
 
-div {
-   float: left;
+.btn-os {
+    /* rgb(64, 81, 181) */
+    background-color: #4051B7 !important;
+    color: #FFFFFF !important;
 }

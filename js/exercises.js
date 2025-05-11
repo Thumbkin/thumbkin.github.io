@@ -1,6 +1,8 @@
 // laad een vooraf genmaakte situatie zoals in de slides
 function laadStartSituatie() {
-    let type = document.getElementById("sel_oefeningen").value;
+    let type = document.getElementById("dropdownMenuLink").value;
+
+    alert(type);
 
     if (type !== 'geen'){
         resetHuidigeSituatie();
@@ -14,100 +16,115 @@ function laadStartSituatie() {
     }
 }
 
-function laadStartSituatieSlides() {
-    voegStartProcesToe("A", 0, 7);
-    voegStartProcesToe("B", 1, 4);
-    voegStartProcesToe("C", 2, 2);
-    voegStartProcesToe("D", 3, 10);
-    voegStartProcesToe("E", 4, 1);
-    voegStartProcesToe("F", 5, 6);
-    voegStartProcesToe("G", 7, 3);
-    voegStartProcesToe("H", 12, 2);
+function loadExercise(type) {
+    if (type !== 'geen'){
+        HTML_GENERATOR.resetProcessInformation();
 
-    selecteerAllePlanners([3, 4, 5]);
+        if(type === "Slides") { laadStartSituatieSlides() };
+        if(type === "Groot naar klein") { laadStartSituatieGrootNaarKlein() };
+        if(type === "Klein naar groot") { laadStartSituatieKleinNaarGroot() };
+        if(type === "Lange processen") { laadStartSituatieLangeProcessen() };
+        if(type === "Korte processen") { laadStartSituatieKorteProcessen() };
+        if(type === "Alle kleuren") { laadStartSituatieAlleKleuren() };
+
+        document.getElementById("dropdownMenuLink").innerText = type;
+    }
+}
+
+function laadStartSituatieSlides() {
+    addStartingProcess("A", 0, 7);
+    addStartingProcess("B", 1, 4);
+    addStartingProcess("C", 2, 2);
+    addStartingProcess("D", 3, 10);
+    addStartingProcess("E", 4, 1);
+    addStartingProcess("F", 5, 6);
+    addStartingProcess("G", 7, 3);
+    addStartingProcess("H", 12, 2);
+
+    selectAllSchedulers([3, 4, 5]);
 }
 
 function laadStartSituatieGrootNaarKlein() {
-    voegStartProcesToe("A", 0, 12);
-    voegStartProcesToe("B", 1, 10);
-    voegStartProcesToe("C", 2, 8);
-    voegStartProcesToe("D", 3, 6);
-    voegStartProcesToe("E", 4, 4);
-    voegStartProcesToe("F", 5, 2);
+    addStartingProcess("A", 0, 12);
+    addStartingProcess("B", 1, 10);
+    addStartingProcess("C", 2, 8);
+    addStartingProcess("D", 3, 6);
+    addStartingProcess("E", 4, 4);
+    addStartingProcess("F", 5, 2);
 
-    selecteerAllePlanners([4, 6, 8]);
+    selectAllSchedulers([4, 6, 8]);
 }
 
 function laadStartSituatieKleinNaarGroot() {
-    voegStartProcesToe("A", 0, 2);
-    voegStartProcesToe("B", 1, 4);
-    voegStartProcesToe("C", 2, 6);
-    voegStartProcesToe("D", 3, 8);
-    voegStartProcesToe("E", 4, 10);
-    voegStartProcesToe("F", 5, 12);
+    addStartingProcess("A", 0, 2);
+    addStartingProcess("B", 1, 4);
+    addStartingProcess("C", 2, 6);
+    addStartingProcess("D", 3, 8);
+    addStartingProcess("E", 4, 10);
+    addStartingProcess("F", 5, 12);
 
-    selecteerAllePlanners([4, 6, 8]);
+    selectAllSchedulers([4, 6, 8]);
 }
 
 function laadStartSituatieKorteProcessen() {
-    voegStartProcesToe("A", 0, 5);
-    voegStartProcesToe("B", 0, 4);
-    voegStartProcesToe("C", 0, 8);
-    voegStartProcesToe("D", 2, 6);
-    voegStartProcesToe("E", 3, 3);
-    voegStartProcesToe("F", 5, 5);
-    voegStartProcesToe("G", 6, 2);
-    voegStartProcesToe("H", 6, 5);
+    addStartingProcess("A", 0, 5);
+    addStartingProcess("B", 0, 4);
+    addStartingProcess("C", 0, 8);
+    addStartingProcess("D", 2, 6);
+    addStartingProcess("E", 3, 3);
+    addStartingProcess("F", 5, 5);
+    addStartingProcess("G", 6, 2);
+    addStartingProcess("H", 6, 5);
 
-    selecteerAllePlanners([2, 4, 5]);
+    selectAllSchedulers([2, 4, 5]);
 }
 
 function laadStartSituatieLangeProcessen() {
-    voegStartProcesToe("A", 0, 7);
-    voegStartProcesToe("B", 0, 9);
-    voegStartProcesToe("C", 0, 8);
-    voegStartProcesToe("D", 2, 5);
-    voegStartProcesToe("E", 3, 10);
-    voegStartProcesToe("F", 4, 4);
-    voegStartProcesToe("G", 4, 2);
-    voegStartProcesToe("H", 6, 5);
+    addStartingProcess("A", 0, 7);
+    addStartingProcess("B", 0, 9);
+    addStartingProcess("C", 0, 8);
+    addStartingProcess("D", 2, 5);
+    addStartingProcess("E", 3, 10);
+    addStartingProcess("F", 4, 4);
+    addStartingProcess("G", 4, 2);
+    addStartingProcess("H", 6, 5);
 
-    selecteerAllePlanners([2, 5, 7]);
+    selectAllSchedulers([2, 5, 7]);
 }
 
 function laadStartSituatieAlleKleuren() {
-    voegStartProcesToe("A", 0, 7);
-    voegStartProcesToe("B", 1, 4);
-    voegStartProcesToe("C", 2, 2);
-    voegStartProcesToe("D", 3, 10);
-    voegStartProcesToe("E", 4, 1);
-    voegStartProcesToe("F", 5, 6);
-    voegStartProcesToe("G", 7, 3);
-    voegStartProcesToe("H", 20, 2);
-    voegStartProcesToe("I", 1, 4);
-    voegStartProcesToe("J", 2, 2);
-    voegStartProcesToe("K", 3, 10);
-    voegStartProcesToe("L", 4, 1);
-    voegStartProcesToe("M", 5, 6);
-    voegStartProcesToe("N", 7, 3);
-    voegStartProcesToe("O", 20, 2);
-    voegStartProcesToe("P", 1, 4);
-    voegStartProcesToe("Q", 2, 2);
-    voegStartProcesToe("R", 3, 10);
-    voegStartProcesToe("S", 4, 1);
-    voegStartProcesToe("T", 5, 6);
-    voegStartProcesToe("U", 7, 3);
-    voegStartProcesToe("V", 20, 2);
-    voegStartProcesToe("W", 3, 10);
-    voegStartProcesToe("X", 4, 1);
-    voegStartProcesToe("Y", 5, 6);
-    voegStartProcesToe("Z", 7, 3);
+    addStartingProcess("A", 0, 7);
+    addStartingProcess("B", 1, 4);
+    addStartingProcess("C", 2, 2);
+    addStartingProcess("D", 3, 10);
+    addStartingProcess("E", 4, 1);
+    addStartingProcess("F", 5, 6);
+    addStartingProcess("G", 7, 3);
+    addStartingProcess("H", 20, 2);
+    addStartingProcess("I", 1, 4);
+    addStartingProcess("J", 2, 2);
+    addStartingProcess("K", 3, 10);
+    addStartingProcess("L", 4, 1);
+    addStartingProcess("M", 5, 6);
+    addStartingProcess("N", 7, 3);
+    addStartingProcess("O", 20, 2);
+    addStartingProcess("P", 1, 4);
+    addStartingProcess("Q", 2, 2);
+    addStartingProcess("R", 3, 10);
+    addStartingProcess("S", 4, 1);
+    addStartingProcess("T", 5, 6);
+    addStartingProcess("U", 7, 3);
+    addStartingProcess("V", 20, 2);
+    addStartingProcess("W", 3, 10);
+    addStartingProcess("X", 4, 1);
+    addStartingProcess("Y", 5, 6);
+    addStartingProcess("Z", 7, 3);
 
-    selecteerAllePlanners([4, 6, 8]);
+    selectAllSchedulers([4, 6, 8]);
 }
 
 // voegt een preoces toe aan de startsituatie
-function voegStartProcesToe(process_id, start, length){
+function addStartingProcess(process_id, start, length){
     document.getElementById("dd_start_" + process_id).value = String(start);
     document.getElementById("dd_length_" + process_id).value = String(length);
 
@@ -115,17 +132,17 @@ function voegStartProcesToe(process_id, start, length){
 }
 
 // selecteer alle planners met vooraf ingezete q waarden
-function selecteerAllePlanners(q_values) {
+function selectAllSchedulers(q_values) {
     let cb_ids = [ 'FCFS', 'SPN', 'SRT', 'RR_one', 'RR_two', 'RR_three'];
 
     for(let i = 0; i < cb_ids.length; i++) {
-        document.getElementById('cb_' + cb_ids[i]).checked = true;
+        document.getElementById('cb_planners_' + cb_ids[i]).checked = true;
     }
 
     // set the drop down values for q for RR
     let rr_number = [ 'one', 'two', 'three'];
 
     for(let j = 0; j < rr_number.length; j++) {
-        document.getElementById('sel_RR_' + rr_number[j] + '_q').value = q_values[j];
+        document.getElementById('sel_planners_RR_' + rr_number[j] + '_q').value = q_values[j];
     }
 }
