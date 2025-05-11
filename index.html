@@ -15,46 +15,37 @@
         <script type="text/javascript" src='./js/exercises.js'> </script>
         <link rel="stylesheet" href='./css/styling.css'>
     </head>
-    <body onload="a();">
+    <body onload="HTML_GENERATOR.initPage();">
         <div id="beginsituatie_container" style="width: 100%; display: block;">
             <!-- per stap een container + beginsituatie -->
             <H2>Beginsituatie</H2>
             <div id="stap_een" style="width: 30%">
-                <table id="lijst_processen" style="text-wrap: nowrap; padding: 5px;">
-                    <tr>
-                        <th>Proces</th>
-                        <th style="text-wrap: nowrap">Start op</th>
-                        <th>Lengte</th>
-                        <!-- kolom met actiesymbool -->
-                        <th></th>
-                    </tr>
-                </table>
+                <div class="container-fluid" id="container_process_info" style="text-align: center">
+                </div>
                 <br><br>
-                <p>
-                    OF laad een oefening:
-                    <select id="sel_oefeningen" onchange="laadStartSituatie()">
-                        <option value="geen">-- Kies een oefening --</option>
-                        <option value="Slides">Slides</option>
-                        <option value="KleinNaarGroot">Klein naar groot</option>
-                        <option value="GrootNaarKlein">Groot naar klein</option>
-                        <option value="LangeProcessen">Lange procesen</option>
-                        <option value="KorteProcessen">Korte processen</option>
-                        <option value="AlleKleuren">Alle kleuren</option>
-                    </select>
-                </p>
+                OF laad een oefening:
+                <select id="sel_exercises" onchange="loadExercise()">
+                    <option value="geen">-- Kies een oefening --</option>
+                    <option value="Slides">Slides</option>
+                    <option value="KleinNaarGroot">Klein naar groot</option>
+                    <option value="GrootNaarKlein">Groot naar klein</option>
+                    <option value="LangeProcessen">Lange procesen</option>
+                    <option value="KorteProcessen">Korte processen</option>
+                    <option value="AlleKleuren">Alle kleuren</option>
+                </select>
             </div>
-            <div id="beginsituatie" style="width: 55%">
+            <div id="container_starting_situation" style="width: 55%">
 
             </div>
             <div id="stap_twee" style="width: 10%">
                 <H2>Planners</H2>
                 <ul style="list-style-type: none; width: 100%; padding-inline-start: 0px">
-                    <li><input id="cb_FCFS" type="checkbox">FCFS</input></li>
-                    <li><input id="cb_SPN" type="checkbox">SPN</input></li>
-                    <li><input id="cb_SRT" type="checkbox">SRT</input></li>
-                    <li><input id="cb_RR_one" type="checkbox">RR</input>, Q = <select id="sel_RR_one_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
-                    <li><input id="cb_RR_two" type="checkbox">RR</input>, Q = <select id="sel_RR_two_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
-                    <li><input id="cb_RR_three" type="checkbox">RR</input>, Q = <select id="sel_RR_three_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
+                    <li><input id="cb_planners_FCFS" type="checkbox">FCFS</input></li>
+                    <li><input id="cb_planners_SPN" type="checkbox">SPN</input></li>
+                    <li><input id="cb_planners_SRT" type="checkbox">SRT</input></li>
+                    <li><input id="cb_planners_RR_one" type="checkbox">RR</input>, Q = <select id="sel_planners_RR_one_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
+                    <li><input id="cb_planners_RR_two" type="checkbox">RR</input>, Q = <select id="sel_planners_RR_two_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
+                    <li><input id="cb_planners_RR_three" type="checkbox">RR</input>, Q = <select id="sel_planners_RR_three_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
                 </ul>
                 <button onclick="runSchedulers();">Bereken planners</button>
             </div>

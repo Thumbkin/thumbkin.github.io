@@ -1,16 +1,21 @@
+html {
+    font-size: 14px;
+}
+
 table {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     border-collapse: collapse;
 }
 
-td {
+tr{
     height: 20px;
+}
+
+td {
     width: 25px;
     min-width: 25px;
     white-space: nowrap;
-    padding-left: 5px;
-    padding-right: 5px;
 }
 
 td.scheduler_vertical {
@@ -92,4 +97,30 @@ input.inp_animator {
     /* rgb(64, 81, 181) */
     background-color: #4051B7 !important;
     color: #FFFFFF !important;
+}
+
+.btn-process-add {
+    /* rgb(40, 167, 69) */
+    background-color: #28A745 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-process-add:hover {
+    /* rgb(33, 136, 56) */
+    background-color: #218838 !important;
+    /* rgb(30, 126, 52) */
+    border-color: #1E7E34 !important;
+}
+
+.btn-process-remove {
+    /* rgb(220, 53, 69) */
+    background-color: #DD3545 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-process-remove:hover {
+    /* rgb(200, 35, 51) */
+    background-color: #CA2333 !important;
+    /* rgb(189, 33, 48) */
+    border-color: #BF2130 !important;
 }

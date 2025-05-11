@@ -66,7 +66,7 @@ function updateProcessStart(process_id){
     PLANNER_EXCERSIZE.updateStartTimeProcess(process_id, start);
 
     // render de nieuwe startsituatie
-    document.getElementById("beginsituatie").innerHTML = HTML_GENERATOR.getStartingSituationAsHTML(PLANNER_EXCERSIZE.getStartingSituation());
+    HTML_GENERATOR.renderStatingSituation(PLANNER_EXCERSIZE.getStartingSituation());
 }
 
 function updateProcessLength(process_id){
@@ -74,7 +74,7 @@ function updateProcessLength(process_id){
     PLANNER_EXCERSIZE.updateLengthProcess(process_id, length);
 
     // render de nieuwe startsituatie
-    document.getElementById("beginsituatie").innerHTML = HTML_GENERATOR.getStartingSituationAsHTML(PLANNER_EXCERSIZE.getStartingSituation());
+    HTML_GENERATOR.renderStatingSituation(PLANNER_EXCERSIZE.getStartingSituation());
 }
 
 function addProcess(process_id) {
@@ -96,12 +96,11 @@ function addProcess(process_id) {
     start = Number(document.getElementById("dd_start_" + process_id).value);
     length = Number(document.getElementById("dd_length_" + process_id).value);
     // render de nieuwe startsituatie
-    document.getElementById("container_starting_situation").innerHTML = HTML_GENERATOR.getStartingSituationAsHTML(PLANNER_EXCERSIZE.getStartingSituation());
+    HTML_GENERATOR.renderStatingSituation(PLANNER_EXCERSIZE.getStartingSituation());
 }
 
 function removeProcess(process_id) {
     PLANNER_EXCERSIZE.removeProcess(process_id);
-
     HTML_GENERATOR.removeProcessRow(process_id);
 }
 

@@ -1,37 +1,24 @@
-// laad een vooraf genmaakte situatie zoals in de slides
-function laadStartSituatie() {
-    let type = document.getElementById("dropdownMenuLink").value;
-
-    alert(type);
-
-    if (type !== 'geen'){
-        resetHuidigeSituatie();
-
-        if(type === "Slides") { laadStartSituatieSlides() };
-        if(type === "GrootNaarKlein") { laadStartSituatieGrootNaarKlein() };
-        if(type === "KleinNaarGroot") { laadStartSituatieKleinNaarGroot() };
-        if(type === "LangeProcessen") { laadStartSituatieLangeProcessen() };
-        if(type === "KorteProcessen") { laadStartSituatieKorteProcessen() };
-        if(type === "AlleKleuren") { laadStartSituatieAlleKleuren() };
-    }
-}
-
 function loadExercise(type) {
+    if(!type) {
+        type = document.getElementById("sel_exercises").value;
+    }
     if (type !== 'geen'){
         HTML_GENERATOR.resetProcessInformation();
 
-        if(type === "Slides") { laadStartSituatieSlides() };
-        if(type === "Groot naar klein") { laadStartSituatieGrootNaarKlein() };
-        if(type === "Klein naar groot") { laadStartSituatieKleinNaarGroot() };
-        if(type === "Lange processen") { laadStartSituatieLangeProcessen() };
-        if(type === "Korte processen") { laadStartSituatieKorteProcessen() };
-        if(type === "Alle kleuren") { laadStartSituatieAlleKleuren() };
+        if(type === "Slides") { loadExcerciseSlides() };
+        if(type === "Groot naar klein") { loadExcerciseGrootNaarKlein() };
+        if(type === "Klein naar groot") { loadExcerciseKleinNaarGroot() };
+        if(type === "Lange processen") { loadExcerciseLangeProcessen() };
+        if(type === "Korte processen") { loadExcerciseKorteProcessen() };
+        if(type === "Alle kleuren") { loadExcerciseAlleKleuren() };
 
-        document.getElementById("dropdownMenuLink").innerText = type;
+        if(document.getElementById("sel_exercises").innerText) {
+            document.getElementById("sel_exercises").innerText = type;
+        }
     }
 }
 
-function laadStartSituatieSlides() {
+function loadExcerciseSlides() {
     addStartingProcess("A", 0, 7);
     addStartingProcess("B", 1, 4);
     addStartingProcess("C", 2, 2);
@@ -44,7 +31,7 @@ function laadStartSituatieSlides() {
     selectAllSchedulers([3, 4, 5]);
 }
 
-function laadStartSituatieGrootNaarKlein() {
+function loadExcerciseGrootNaarKlein() {
     addStartingProcess("A", 0, 12);
     addStartingProcess("B", 1, 10);
     addStartingProcess("C", 2, 8);
@@ -55,7 +42,7 @@ function laadStartSituatieGrootNaarKlein() {
     selectAllSchedulers([4, 6, 8]);
 }
 
-function laadStartSituatieKleinNaarGroot() {
+function loadExcerciseKleinNaarGroot() {
     addStartingProcess("A", 0, 2);
     addStartingProcess("B", 1, 4);
     addStartingProcess("C", 2, 6);
@@ -66,7 +53,7 @@ function laadStartSituatieKleinNaarGroot() {
     selectAllSchedulers([4, 6, 8]);
 }
 
-function laadStartSituatieKorteProcessen() {
+function loadExcerciseKorteProcessen() {
     addStartingProcess("A", 0, 5);
     addStartingProcess("B", 0, 4);
     addStartingProcess("C", 0, 8);
@@ -79,7 +66,7 @@ function laadStartSituatieKorteProcessen() {
     selectAllSchedulers([2, 4, 5]);
 }
 
-function laadStartSituatieLangeProcessen() {
+function loadExcerciseLangeProcessen() {
     addStartingProcess("A", 0, 7);
     addStartingProcess("B", 0, 9);
     addStartingProcess("C", 0, 8);
@@ -92,7 +79,7 @@ function laadStartSituatieLangeProcessen() {
     selectAllSchedulers([2, 5, 7]);
 }
 
-function laadStartSituatieAlleKleuren() {
+function loadExcerciseAlleKleuren() {
     addStartingProcess("A", 0, 7);
     addStartingProcess("B", 1, 4);
     addStartingProcess("C", 2, 2);

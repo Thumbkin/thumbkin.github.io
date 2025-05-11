@@ -34,7 +34,7 @@ class HTML_GENERATOR {
         return toHTML;
     }
 
-    static getStartingSituationAsHTML (starting_situation) {
+    static renderStatingSituation (starting_situation) {
         let processes = starting_situation.getProcesses();
         // sort processes by id
         processes.sort(function(a, b){
@@ -75,7 +75,7 @@ class HTML_GENERATOR {
             for (let i = (process.getStart() + process.getLength()); i < amountTimeNeeded; i++) {
                 toHTML += '<td class="scheduler_step"></td>';
             }
-            toHTML += '<tr>';
+            toHTML += '</tr>';
         });
         // Last row: time units
         toHTML += '<tr><td class="scheduler_vertical_no_border">0</td>';
@@ -84,7 +84,7 @@ class HTML_GENERATOR {
         }
         toHTML += '</tr></table>';
 
-        return toHTML;
+        document.getElementById("container_starting_situation").innerHTML = toHTML;
     }
 
     // genereert html code voor een drop down voor start of lengte
@@ -208,8 +208,8 @@ class HTML_GENERATOR {
         let div_element = document.createElement("div");
         div_element.id = "div_process_info_" + process_id;
 
-        let new_inner_HTML = "<div class='row'>";
-        new_inner_HTML += "<div class=\"col-5\" style='background-color: " + PROCESS_COLORS.get(process_id) +"; text-align: center; vertical-align: middle;\"'>" + process_id + "</div>";
+        let new_inner_HTML = "<div class=\"row\" style=\"padding-bottom: 3px; text-align: center; vertical-align: middle;\">";
+        new_inner_HTML += "<div class=\"col-5\" style=\"border: 1px solid black; background-color: " + PROCESS_COLORS.get(process_id) +";\">" + process_id + "</div>";
         new_inner_HTML += "<div class=\"col-3\">" + HTML_GENERATOR.generateDropDown(process_id, "start") + "</div>";
         new_inner_HTML += "<div class=\"col-3\">" + HTML_GENERATOR.generateDropDown(process_id, "length") + "</div>";
         new_inner_HTML += "<div class=\"col-1\" id=\"btns_" + process_id + "\" ></div>";
@@ -222,6 +222,7 @@ class HTML_GENERATOR {
     }
 
     static removeProcessRow(process_id){
+        document.getElementById("div_process_info_"+ process_id).innerHTML = "";
         document.getElementById("div_process_info_"+ process_id).remove();
         // if we removed the last process, add a dummy again
         if(PLANNER_EXCERSIZE.getTotalNumberOfProcesses() <= 0){
@@ -229,27 +230,17 @@ class HTML_GENERATOR {
         }
 
         // render de nieuwe startsituatie
-        document.getElementById("container_starting_situation").innerHTML = this.getStartingSituationAsHTML(PLANNER_EXCERSIZE.getStartingSituation());
+        this.renderStatingSituation(PLANNER_EXCERSIZE.getStartingSituation());
     }
 
     static setProcessAddButton(process_id) {
         // change the icon in the table to remove instead of add
-        document.getElementById("btns_" + process_id).innerHTML = "<button type=\"button\" class=\"btn bi-plus-square\" onclick=\"addProcess('" + process_id + "');\">" +
-            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-square" viewBox="0 0 16 16">' +
-                '<path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>' +
-                '<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>' +
-            '</svg>' +
-        "</buton>";
+        document.getElementById("btns_" + process_id).innerHTML = "<button type=\"button\" class=\"btn btn-process-add\" onclick=\"addProcess('" + process_id + "');\">+</buton>";
     }
 
     static setProcessRemoveButton(process_id) {
         // change the icon in the table to remove instead of add
-        document.getElementById("btns_" + process_id).innerHTML = "<button type=\"button\" class=\"btn bi-dash-square\" onclick=\"removeProcess('" + process_id + "');\">" +
-            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-square" viewBox="0 0 16 16">' +
-                '<path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>' +
-                '<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>' +
-            '</svg>' +
-            "</buton>";
+        document.getElementById("btns_" + process_id).innerHTML = "<button type=\"button\" class=\"btn btn-process-remove\" onclick=\"removeProcess('" + process_id + "');\">-</buton>";
     }
 
     static resetProcessInformation() {
