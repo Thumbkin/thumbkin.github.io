@@ -124,3 +124,8 @@ input.inp_animator {
     /* rgb(189, 33, 48) */
     border-color: #BF2130 !important;
 }
+
+div {
+    border: 1px solid black;
+    text-wrap: nowrap !important;
+}

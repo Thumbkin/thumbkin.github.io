@@ -52,3 +52,6 @@ SCHEDULER_TYPES.set('FCFS', 'FCFS');
 SCHEDULER_TYPES.set('SPN', 'SPN');
 SCHEDULER_TYPES.set('SRT', 'SRT');
 SCHEDULER_TYPES.set('RR', 'RR');
+
+
+const USED_SCHEDULER_TYPES = ['FCFS', 'SRT', 'SPN', 'RR_one', 'RR_two', 'RR_three'];

@@ -16,7 +16,7 @@ function resetHuidigeSituatie() {
 }
 
 function runSchedulers () {
-    document.getElementById("resultaten_container").style.display = "none";
+    document.getElementById("container_results").style.display = "none";
     // eerst controleren of we wel minstens een proces hebben
     if(PLANNER_EXCERSIZE.getStartingSituation().isValid()) {
         // chcken of we minsntes 1 planner hebben geselecteerd
@@ -38,19 +38,17 @@ function runSchedulers () {
 
         if(PLANNER_EXCERSIZE.hasAtLeastOnePlanner()) {
             PLANNER_EXCERSIZE.executeSchedulers();
-
-            document.getElementById("resultaten_stap");
+/*
             // change the value of the slider to total amountof steps and auto set it to last step
             document.getElementById("inp_range_steps").max = PLANNER_EXCERSIZE.getTotalNumberOfSteps() - 1;
             document.getElementById("inp_range_steps").value = PLANNER_EXCERSIZE.getTotalNumberOfSteps() - 1;
-
+*/
             ANIMATOR.setMaxSteps(PLANNER_EXCERSIZE.getTotalNumberOfSteps());
 
-            document.getElementById("resultaten_planners").innerHTML = "";
             // render the final step
             HTML_GENERATOR.renderStep(PLANNER_EXCERSIZE.getTotalNumberOfSteps() - 1);
 
-            document.getElementById("resultaten_container").style.display = "block";
+            document.getElementById("container_results").style.display = "block";
         }
         else {
             alert("Er moet minstens 1 planner aangeduid worden!");

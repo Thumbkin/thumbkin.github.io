@@ -20,7 +20,7 @@ class HTML_GENERATOR {
             for (let i = 0; i <= step_number; i++) {
                 toHTML += '<td class="scheduler_step" style="background-color: '+ PROCESS_COLORS.get(schedulers[s].getSolution()[i]) + '">' + schedulers[s].getSolution()[i] + '</td>';
             }
-            toHTML += '<tr>';
+            toHTML += '</tr>';
         }
         // filler row: empty
         toHTML += '<tr><td class="scheduler_vertical"></td><td colspan="' + (number_of_steps + 1) + '"></td></tr>';
@@ -87,6 +87,52 @@ class HTML_GENERATOR {
         document.getElementById("container_starting_situation").innerHTML = toHTML;
     }
 
+    // genereert code voor de container met stappen informatie
+    static generateResultsStepInfo(){
+        let html_element = document.getElementById('results_step_information');
+
+        // create the container
+        let div_container = document.createElement('div');
+        div_container.className = "container";
+
+        // header row
+        let div_row_container = document.createElement('div');
+        div_row_container.className = "row";
+        div_row_container.innerHTML = "<div class=\"col-1\">Planner</div>\n" +
+            "<div class=\"col\">VOOR uitvoering</div>\n" +
+            "<div class=\"col\">Uitvoering</div>\n" +
+            "<div class=\"col\">NA uitvoering</div>";
+        div_container.appendChild(div_row_container);
+
+        // 2 rows per planner
+        for(let i = 0; i < USED_SCHEDULER_TYPES.length; i++) {
+            div_row_container = document.createElement('div');
+            div_row_container.className = "row";
+            div_row_container.innerHTML = "<div class=\"col-1\">" + USED_SCHEDULER_TYPES[i] + "</div>" +
+                "<div class=\"col-11\">" +
+                    "<div class=\"row\">" +
+                        "<div class=\"col-1\">Wachtrij</div>" +
+                        "<div class=\"col-3\" id=\"div_" + USED_SCHEDULER_TYPES[i] + "_queue_pre_exec\"></div>" +
+                        "<div class=\"col-1\">Proces</div>" +
+                        "<div class=\"col-3\" id=\"div_" + USED_SCHEDULER_TYPES[i] + "_exec_process\"></div>" +
+                        "<div class=\"col-2\">Toevoegen aan wachtrij?</div>";
+                        "<div class=\"col-2\" id=\"div_" + USED_SCHEDULER_TYPES[i] + "_add_to_queue\"></div>" +
+                    "</div>" +
+                    "<div class=\"row\">" +
+                        "<div class=\"col-1\">Wisselen?</div>" +
+                        "<div class=\"col-3\" id=\"div_" + USED_SCHEDULER_TYPES[i] + "_reason_swap\"></div>" +
+                        "<div class=\"col-1\">Wachtrij</div>" +
+                        "<div class=\"col-3\" id=\"div_" + USED_SCHEDULER_TYPES[i] + "_queue_exec\"></div>" +
+                        "<div class=\"col-1\">Wachtrij</div>" +
+                        "<div class=\"col-3\" id=\"div_" + USED_SCHEDULER_TYPES[i] + "_queue_post_exec\"></div>"+
+                    "</div>" +
+                "</div>";
+            div_container.appendChild(div_row_container);
+        }
+
+        html_element.append(div_container);
+    }
+
     // genereert html code voor een drop down voor start of lengte
     static generateDropDown (process_id, type) {
         let inner_HTML = '<select id="dd_' + type + '_' + process_id + '" class="inp_process" ';
@@ -122,7 +168,7 @@ class HTML_GENERATOR {
 
     //renders one step of the solution
     static renderStep(step_number) {
-        // fill in the top section of the info
+  /*      // fill in the top section of the info
         document.getElementById("td_timestamp").innerHTML = step_number;
         document.getElementById("btn_first_step").disabled = (step_number === 0);
         document.getElementById("btn_prev_step").disabled = (step_number === 0);
@@ -142,7 +188,6 @@ class HTML_GENERATOR {
         let current_rr_ids = ["one", "two", "three"];
 
         // hide all planner rows frist
-        let all_planner_types = ['FCFS', 'SRT', 'SPN', 'RR_one', 'RR_two', 'RR_three'];
         for(let i = 0; i < all_planner_types.length; i++) {
             document.getElementById("tr_info_" + all_planner_types[i] + "_one").style.display = "none";
             document.getElementById("tr_info_" + all_planner_types[i] + "_two").style.display = "none";
@@ -182,14 +227,17 @@ class HTML_GENERATOR {
             document.getElementById("tr_info_" + scheduler_type + "_one").style.display = "";
             document.getElementById("tr_info_" + scheduler_type + "_two").style.display = "";
         }
-
-        document.getElementById("resultaten_planners").innerHTML = "<br>" + HTML_GENERATOR.getSchedulerSolutionsAsHTML(PLANNER_EXCERSIZE.getSchedulers(), step_number);
+*/
+        document.getElementById("results_schedulers").innerHTML = "<br>" + HTML_GENERATOR.getSchedulerSolutionsAsHTML(PLANNER_EXCERSIZE.getSchedulers(), step_number);
     }
+
 
     // Renders the components for the initial HTML page
     static initPage(){
         this.addProcessInformationHeaderRow();
         this.addNewProcessRow();
+        this.renderStatingSituation(PLANNER_EXCERSIZE.getStartingSituation());
+        this.generateResultsStepInfo();
     }
 
     static addProcessInformationHeaderRow() {
@@ -218,14 +266,14 @@ class HTML_GENERATOR {
 
         document.getElementById("container_process_info").appendChild(div_element);
 
-        this.setProcessAddButton(process_id)
+        this.setProcessAddButton(process_id);
     }
 
     static removeProcessRow(process_id){
-        document.getElementById("div_process_info_"+ process_id).innerHTML = "";
-        document.getElementById("div_process_info_"+ process_id).remove();
-        // if we removed the last process, add a dummy again
-        if(PLANNER_EXCERSIZE.getTotalNumberOfProcesses() <= 0){
+        let div_element = document.getElementById("div_process_info_"+ process_id);
+        document.getElementById("container_process_info").removeChild(div_element);
+        // check if we still have process rows, 1st row is header row
+        if(document.getElementById("container_process_info").childElementCount <= 1){
             this.addNewProcessRow();
         }
 
