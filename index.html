@@ -13,187 +13,164 @@
         <script type="text/javascript" src='./js/animator.js'> </script>
         <script type="text/javascript" src='./js/main.js'> </script>
         <script type="text/javascript" src='./js/exercises.js'> </script>
-        <link rel="stylesheet" href='./css/styling.css'>
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <style type="text/tailwindcss">
+            @theme {
+                --color-clifford: #da373d;
+            }
+
+            div {
+                border: 1px solid black;
+                text-wrap: nowrap !important;
+                padding: 5px;
+            }
+
+            .btn {
+                @apply font-bold py-2 px-4 rounded;
+            }
+            .btn-blue {
+                @apply bg-blue-500 text-white;
+            }
+            .btn-blue:hover {
+                @apply bg-blue-700;
+            }
+        </style>
     </head>
     <body onload="HTML_GENERATOR.initPage();">
-        <div id="beginsituatie_container" style="width: 100%; display: block;">
-            <!-- per stap een container + beginsituatie -->
-            <H2>Beginsituatie</H2>
-            <div id="stap_een" style="width: 30%">
-                <div class="container-fluid" id="container_process_info" style="text-align: center">
+        <div id="container_main">
+            <div id="container_problem" class="grid grid-cols-20 gap-1">
+                <div class="col-span-16">
+                    <H1 class="text-3xl font-bold underline text-clifford">Beginsituatie</H1>
                 </div>
-                <br><br>
-                OF laad een oefening:
-                <select id="sel_exercises" onchange="loadExercise()">
-                    <option value="geen">-- Kies een oefening --</option>
-                    <option value="Slides">Slides</option>
-                    <option value="KleinNaarGroot">Klein naar groot</option>
-                    <option value="GrootNaarKlein">Groot naar klein</option>
-                    <option value="LangeProcessen">Lange procesen</option>
-                    <option value="KorteProcessen">Korte processen</option>
-                    <option value="AlleKleuren">Alle kleuren</option>
-                </select>
-            </div>
-            <div id="container_starting_situation" style="width: 55%">
+                <div class="col-span-4">
+                    <H1>Planners</H1>
+                </div>
+                <div class="col-span-5">
+                    <div class="grid grid-cols-5 gap-1">
+                        <div class="col-span-2">
+                            Proces
+                        </div>
+                        <div>
+                            Start op
+                        </div>
+                        <div>
+                            Lengte
+                        </div>
+                        <div>
 
-            </div>
-            <div id="stap_twee" style="width: 10%">
-                <H2>Planners</H2>
-                <ul style="list-style-type: none; width: 100%; padding-inline-start: 0px">
-                    <li><input id="cb_planners_FCFS" type="checkbox">FCFS</input></li>
-                    <li><input id="cb_planners_SPN" type="checkbox">SPN</input></li>
-                    <li><input id="cb_planners_SRT" type="checkbox">SRT</input></li>
-                    <li><input id="cb_planners_RR_one" type="checkbox">RR</input>, Q = <select id="sel_planners_RR_one_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
-                    <li><input id="cb_planners_RR_two" type="checkbox">RR</input>, Q = <select id="sel_planners_RR_two_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
-                    <li><input id="cb_planners_RR_three" type="checkbox">RR</input>, Q = <select id="sel_planners_RR_three_q"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></li>
-                </ul>
-                <button onclick="runSchedulers();">Bereken planners</button>
-            </div>
-        </div>
-        <br>
-        <div id="resultaten_container" style="float:left; display: none;">
-            <H2>Resultaten</H2>
-            <div class="stepscontainer" id="resultaten_stap">
-                <div>
-                    <!-- Structuur tabel:
-                                       | tijdstip: <getal>
-                                       |  knop < slider stappen knop > en knop play
-                                       | VOOR uitvoering        | TIJDENS uitvoering    | NA uitvoering
-                          naam planner | wachtrij   | xxxx      | Proces    | x (reden) | Toevoegen aan wachtrij? | x (welke )
-                                       | Wisselen?  | x (reden) | Wachtrij  | xxxxxx    | Wachtrij                | xxx
-                    -->
-                    <table border="1" class="table_info">
-                        <tr>
-                            <td></td>
-                            <td class="td_info_timestamp">Tijdstip:</td>
-                            <td class="td_info_timestamp" id="td_timestamp"></td>
-                            <td colspan="4"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td colspan="6">
-                                <button id="btn_first_step" onclick="loadFirstStep();">&lt;&lt;</button>
-                                <button id="btn_prev_step" onclick="loadPreviousStep();">&lt;</button>
-                                <input type="range" min="0" max="100" id="inp_range_steps" onclick="loadCurrentStep();">
-                                <button id="btn_next_step" onclick="loadNextStep();">&gt;</button>
-                                <button id="btn_last_step" onclick="loadLastStep();">&gt;&gt;</button>
-                                <input type="image" src="./img/play.png" id="btn_play_steps_run" class="inp_animator" onclick="ANIMATOR.play();" />
-                                <input type="image" src="./img/pause.png" id="btn_play_steps_pause" class="inp_animator"  onclick="ANIMATOR.pause();" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td_info_header">Planner</td>
-                            <td class="td_info_header" colspan="2">VOOR uitvoering</td>
-                            <td class="td_info_header" colspan="2">Uitvoering</td>
-                            <td class="td_info_header" colspan="2">NA uitvoering</td>
-                        </tr>
-                        <tr id="tr_info_FCFS_one">
-                            <td class="td_info_planner" rowspan="2">FCFS</td>
-                            <td>Wachtrij</td>
-                            <td id="td_FCFS_queue_pre_exec">Wachtrij</td>
-                            <td>Proces:</td>
-                            <td id="td_FCFS_exec_proces"></td>
-                            <td>Toevoegen aan wachtrij?</td>
-                            <td id="td_FCFS_add_to_queue"></td>
-                        </tr>
-                        <tr id="tr_info_FCFS_two" class="bottom_row_info">
-                            <td>xisselen?</td>
-                            <td id="td_FCFS_reason_swap"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_FCFS_queue_exec"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_FCFS_queue_post_exec"></td>
-                        </tr>
-                        <tr id="tr_info_SPN_one">
-                            <td class="td_info_planner" rowspan="2">SPN</td>
-                            <td>Wachtrij</td>
-                            <td id="td_SPN_queue_pre_exec">Wachtrij</td>
-                            <td>Proces:</td>
-                            <td id="td_SPN_exec_proces"></td>
-                            <td>Toevoegen aan wachtrij?</td>
-                            <td id="td_SPN_add_to_queue"></td>
-                        </tr>
-                        <tr id="tr_info_SPN_two">
-                            <td>Wisselen?</td>
-                            <td id="td_SPN_reason_swap"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_SPN_queue_exec"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_SPN_queue_post_exec"></td>
-                        </tr>
-                        <tr id="tr_info_SRT_one">
-                            <td class="td_info_planner" rowspan="2">SRT</td>
-                            <td>Wachtrij</td>
-                            <td id="td_SRT_queue_pre_exec">Wachtrij</td>
-                            <td>Proces:</td>
-                            <td id="td_SRT_exec_proces"></td>
-                            <td>Toevoegen aan wachtrij?</td>
-                            <td id="td_SRT_add_to_queue"></td>
-                        </tr>
-                        <tr id="tr_info_SRT_two">
-                            <td>Wisselen?</td>
-                            <td id="td_SRT_reason_swap"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_SRT_queue_exec"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_SRT_queue_post_exec"></td>
-                        </tr>
-                        <tr id="tr_info_RR_one_one">
-                            <td class="td_info_planner" rowspan="2" id="td_RR_one_q">RR</td>
-                            <td>Wachtrij</td>
-                            <td id="td_RR_one_queue_pre_exec">Wachtrij</td>
-                            <td>Proces:</td>
-                            <td id="td_RR_one_exec_proces"></td>
-                            <td>Toevoegen aan wachtrij?</td>
-                            <td id="td_RR_one_add_to_queue"></td>
-                        </tr>
-                        <tr id="tr_info_RR_one_two">
-                            <td>Wisselen?</td>
-                            <td id="td_RR_one_reason_swap"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_RR_one_queue_exec"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_RR_one_queue_post_exec"></td>
-                        </tr>
-                        <tr id="tr_info_RR_two_one">
-                            <td class="td_info_planner" rowspan="2" id="td_RR_two_q">RR</td>
-                            <td>Wachtrij</td>
-                            <td id="td_RR_two_queue_pre_exec">Wachtrij</td>
-                            <td>Proces:</td>
-                            <td id="td_RR_two_exec_proces"></td>
-                            <td>Toevoegen aan wachtrij?</td>
-                            <td id="td_RR_two_add_to_queue"></td>
-                        </tr>
-                        <tr id="tr_info_RR_two_two">
-                            <td>Wisselen?</td>
-                            <td id="td_RR_two_reason_swap"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_RR_two_queue_exec"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_RR_two_queue_post_exec"></td>
-                        </tr>
-                        <tr id="tr_info_RR_three_one">
-                            <td class="td_info_planner" rowspan="2" id="td_RR_three_q">RR</td>
-                            <td>Wachtrij</td>
-                            <td id="td_RR_three_queue_pre_exec">Wachtrij</td>
-                            <td>Proces:</td>
-                            <td id="td_RR_three_exec_proces"></td>
-                            <td>Toevoegen aan wachtrij?</td>
-                            <td id="td_RR_three_add_to_queue"></td>
-                        </tr>
-                        <tr id="tr_info_RR_three_two">
-                            <td>Wisselen?</td>
-                            <td id="td_RR_three_reason_swap"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_RR_three_queue_exec"></td>
-                            <td>Wachtrij</td>
-                            <td id="td_RR_three_queue_post_exec"></td>
-                        </tr>
-                    </table>
+                        </div>
+                        <div class="col-span-2">
+                            A
+                        </div>
+                        <div>
+                            5
+                        </div>
+                        <div>
+                            3
+                        </div>
+                        <div>
+                            -
+                        </div>
+                        <div class="col-span-2">
+                            B
+                        </div>
+                        <div>
+                            3
+                        </div>
+                        <div>
+                            3
+                        </div>
+                        <div>
+                            +
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-11">
+                    Hier komt tabel met de startsituatie
+                </div>
+                <div class="col-span-4">
+                    FCFS<br>
+                    SPN<br>
+                    SRT<br>
+                    RR, Q = 5<br>
+                    RR, Q = 7<br>
+                    RR, Q = 9
+                </div>
+
+                <div class="col-span-5">
+                    Drowdown voor laad oefening
+                </div>
+                <div class="col-span-11">
+                </div>
+                <div class="col-span-4">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Bereken</button>
                 </div>
             </div>
-            <div id="resultaten_planners">
-
+            <br>
+            <div id="container_solution_info">
+                <div id="container_solution_animator" class="grid grid-cols-10 gap-1">
+                    <div></div>
+                    <div class="col-span-9">
+                        Hier komt de animator UI
+                    </div>
+                </div>
+                <div id="container_solution_step_info" class="grid grid-cols-10 gap-1">
+                    <div class="col-span-9">
+                        Gedetailleerde informatie per stap voor elke planner
+                    </div>
+                    <div>
+                        HIDE btn
+                    </div>
+                    <div>
+                        FCFS
+                    </div>
+                    <div class="col-span-9">
+                        <div class="grid grid-cols-13 gap-1">
+                            <div>
+                                Wachtrij
+                            </div>
+                            <div class="col-span-3">
+                                A, B, C, D
+                            </div>
+                            <div>
+                                Proces
+                            </div>
+                            <div class="col-span-3">
+                                F (Huidige proces)
+                            </div>
+                            <div class="col-span-2">
+                                Toevoegen aan wachtrij?
+                            </div>
+                            <div class="col-span-3">
+                                Nee
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-13 gap-1">
+                            <div>
+                                Wisselen?
+                            </div>
+                            <div class="col-span-3">
+                                Neen, huidige proces nog niet volledig uitgevoerd
+                            </div>
+                            <div>
+                                Wachtrij
+                            </div>
+                            <div class="col-span-3">
+                                B, C, D
+                            </div>
+                            <div class="col-span-2">
+                                Wachtrij
+                            </div>
+                            <div class="col-span-3">
+                                B, C, D
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div id="container_solution_full">
+                    Hier komt de tabel met volledige oplossing voor alle planners
+                </div>
             </div>
         </div>
     </body>

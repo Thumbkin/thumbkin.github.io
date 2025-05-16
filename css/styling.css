@@ -93,10 +93,21 @@ input.inp_animator {
     white-space: nowrap;
 }
 
+.process_row {
+    height: 20px;
+}
+
 .btn-os {
     /* rgb(64, 81, 181) */
     background-color: #4051B7 !important;
     color: #FFFFFF !important;
+}
+
+.btn-os:hover {
+    /* rgb(40, 75, 130) */
+    background-color: #284B78 !important;
+    /* rgb(36, 72, 120) */
+    border-color: #24486E !important;
 }
 
 .btn-process-add {

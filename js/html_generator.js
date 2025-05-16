@@ -115,7 +115,7 @@ class HTML_GENERATOR {
                         "<div class=\"col-3\" id=\"div_" + USED_SCHEDULER_TYPES[i] + "_queue_pre_exec\"></div>" +
                         "<div class=\"col-1\">Proces</div>" +
                         "<div class=\"col-3\" id=\"div_" + USED_SCHEDULER_TYPES[i] + "_exec_process\"></div>" +
-                        "<div class=\"col-2\">Toevoegen aan wachtrij?</div>";
+                        "<div class=\"col-2\">Toevoegen aan wachtrij?</div>" +
                         "<div class=\"col-2\" id=\"div_" + USED_SCHEDULER_TYPES[i] + "_add_to_queue\"></div>" +
                     "</div>" +
                     "<div class=\"row\">" +

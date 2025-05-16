@@ -21,12 +21,10 @@
   <div class="container-fluid">
     <!-- title row -->
     <div class="row">
-      <div class="col-3">
+      <div class="col-10">
         <h3>Beginsituatie</h3>
       </div>
-      <div class="col-8">
-      </div>
-      <div class="col-1">
+      <div class="col-2">
         <h3>Planners</h3>
       </div>
     </div>
@@ -36,23 +34,25 @@
         <div class="container-fluid" id="container_process_info" style="text-align: center">
         </div>
         <br><br>
-        <div class="dropdown">
-          <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="sel_exercises" data-bs-toggle="dropdown" aria-expanded="false">
-            Laad een oefening
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="sel_exercises">
-            <li><a class="dropdown-item" href="javascript:loadExercise('Slides');">Slides</a></li>
-            <li><a class="dropdown-item" href="javascript:loadExercise('Klein naar groot');">Klein naar groot</a></li>
-            <li><a class="dropdown-item" href="javascript:loadExercise('Groot naar klein');">Groot naar klein</a></li>
-            <li><a class="dropdown-item" href="javascript:loadExercise('Korte processen');">Korte processen</a></li>
-            <li><a class="dropdown-item" href="javascript:loadExercise('Lange processen');">Lange processen</a></li>
-            <li><a class="dropdown-item" href="javascript:loadExercise('Alle kleuren');">Alle kleuren</a></li>
-          </ul>
+        <div class="container-fluid"  style="text-align: center">
+          <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="sel_exercises" data-bs-toggle="dropdown" aria-expanded="false">
+              Laad een oefening
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="sel_exercises">
+              <li><a class="dropdown-item" href="javascript:loadExercise('Slides');">Slides</a></li>
+              <li><a class="dropdown-item" href="javascript:loadExercise('Klein naar groot');">Klein naar groot</a></li>
+              <li><a class="dropdown-item" href="javascript:loadExercise('Groot naar klein');">Groot naar klein</a></li>
+              <li><a class="dropdown-item" href="javascript:loadExercise('Korte processen');">Korte processen</a></li>
+              <li><a class="dropdown-item" href="javascript:loadExercise('Lange processen');">Lange processen</a></li>
+              <li><a class="dropdown-item" href="javascript:loadExercise('Alle kleuren');">Alle kleuren</a></li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="col-8" id="container_starting_situation" style="overflow-x: auto;">
+      <div class="col-7" id="container_starting_situation" style="overflow-x: auto;">
       </div>
-      <div class="col-1">
+      <div class="col-2">
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="cb_planners_FCFS">
           <label class="form-check-label" for="cb_planners_FCFS">FCFS</label>
@@ -84,11 +84,17 @@
         <button class="btn btn-os" onclick="runSchedulers();">Bereken planners</button>
       </div>
     </div>
+    <br>
     <div class="row">
       <div class="col" id="container_results">
         <div class="container">
-          <div class="row">
-            <div class="col" id="results_step_information"></div>
+          <div class="row" id="row_animator">
+          </div>
+          <div class="row" id="row_step_information">
+            <div class="col-11">Meer informatie per planner bij de huidige stap</div>
+            <div class="col-1"><button class="btn btn-os">Hide </button></div>
+          </div>
+          <div class="row" id="results_step_information">
           </div>
           <div class="row">
             <div class="col" id="results_schedulers">
