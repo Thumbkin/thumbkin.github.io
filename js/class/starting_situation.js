@@ -1,6 +1,7 @@
 class StartingSituation {
     processes;
     used_process_ids;
+    total_steps;
 
     constructor() {
         this.processes = []
@@ -8,11 +9,16 @@ class StartingSituation {
         for(let i = 0; i < PROCESS_IDS.length; i++) {
             this.used_process_ids.set(PROCESS_IDS[i], false);
         }
+        this.total_steps = 0;
+        // always show an empty column step
+        this.max_steps = 1;
     }
 
     addProcess(process) {
         this.processes.push(process);
         this.used_process_ids.set(process.getId(), true);
+        this.#calulateTotalAmountOfTimeNeeded();
+        this.#calulateMaxTime();
     }
 
     removeProcess(process_id) {
@@ -21,6 +27,8 @@ class StartingSituation {
                 this.processes.splice(i, 1);
                 this.used_process_ids.set(process_id, false);
                 i = this.processes.length;
+                this.#calulateTotalAmountOfTimeNeeded();
+                this.#calulateMaxTime();
             }
         }
     }
@@ -70,6 +78,8 @@ class StartingSituation {
         for(let i = 0; i < this.processes.length; i++) {
             if(this.processes[i].id === processID) {
                 this.processes[i].setStart(newStart);
+                this.#calulateTotalAmountOfTimeNeeded();
+                this.#calulateMaxTime();
                 i = this.processes.length;
             }
         }
@@ -80,7 +90,48 @@ class StartingSituation {
             if(this.processes[i].id === processID) {
                 this.processes[i].setLength(newLength);
                 i = this.processes.length;
+                this.#calulateTotalAmountOfTimeNeeded();
+                this.#calulateMaxTime();
             }
+        }
+    }
+
+    // returns the maximum time needed to display the processes
+    getMaxTime(){
+        return this.max_steps;
+    }
+
+    // calculates the maximum time needed to display the processes
+    #calulateMaxTime( ){
+        this.max_steps = 0;
+        // loop each process and add its length as steps
+        for(let i= 0; i < this.processes.length; i++){
+            // if start point is in future (in other words there will be empty execution steps)
+            // calculate forward
+            if (this.processes[i].getStart() + this.processes[i].getLength() > this.max_steps) {
+                this.max_steps = this.processes[i].getStart() + this.processes[i].getLength();
+            }
+        }
+        // always add 1 more as buffer
+        this.max_steps++;
+    }
+
+    // returns the total amount of time needed to execute the planner
+    getTotalAmountOfTimeNeeded(){
+        return this.total_steps;
+    }
+
+    // calculates the total amount of time needed to execute the planner
+    #calulateTotalAmountOfTimeNeeded( ){
+        this.total_steps = 0;
+        // loop each process and add its length as steps
+        for(let i= 0; i < this.processes.length; i++){
+            // if start point is in future (in other words there will be empty execution steps)
+            // calculate forward
+            if (this.processes[i].getStart() > this.total_steps) {
+                this.total_steps = this.processes[i].getStart();
+            }
+            this.total_steps += this.processes[i].getLength();
         }
     }
 }

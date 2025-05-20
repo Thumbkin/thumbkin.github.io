@@ -9,7 +9,7 @@ class Animator {
 
     run = async () => {
         while (this.isRunning() && this.step < this.max_steps) {
-            HTML_GENERATOR.renderStep(this.step);
+            GC.renderStep(this.step);
             this.step++;
             await sleep(1500);
         }
@@ -17,9 +17,7 @@ class Animator {
 
     play(){
         this.is_running = true;
-        document.getElementById("btn_play_steps_run").style.visibility = "hidden";
-        document.getElementById("btn_play_steps_pause").style.visibility = "visible";
-        ANIMATOR.run();
+        this.run();
     }
 
     isRunning(){
@@ -28,15 +26,11 @@ class Animator {
 
     pause() {
         this.is_running = false;
-        document.getElementById("btn_play_steps_run").style.visibility = "visible";
-        document.getElementById("btn_play_steps_pause").style.visibility = "hidden";
     }
 
     stop(){
         this.is_running = false;
         this.step = 0;
-        document.getElementById("btn_play_steps_run").style.visibility = "visible";
-        document.getElementById("btn_play_steps_pause").style.visibility = "hidden";
     }
 
     setMaxSteps(max_steps) {
